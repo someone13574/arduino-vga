@@ -10,7 +10,10 @@ const unsigned int vertical_front_porch_lines = 10;
 const unsigned int vertical_sync_pulse_lines = 2;
 const unsigned int vertical_back_porch_lines = 33;
 
-inline __attribute__((always_inline)) void Constant_Horizontal_Line();
+inline __attribute__((always_inline)) void Visible_Horizontal_Line();
+inline __attribute__((always_inline)) void Vertical_Blanking_Line();
+inline __attribute__((always_inline)) void Vertical_Blanking_Line2();
+inline __attribute__((always_inline)) void Vertical_Sync_Pulse();
 
 void setup() {
   pinMode(12, OUTPUT);
@@ -21,54 +24,194 @@ void setup() {
 }
 
 void loop() {
-  while (true)
-  {
-    for (unsigned int i = 0; i < vertical_visible_area_lines; i++)
-    {
-      PORTD |= 0b11111100;
-      PORTB |= 0b00000111;
-      Constant_Horizontal_Line();
-    }
+  asm("sof:"); // Start of frame
 
-    for (unsigned int i = 0; i < vertical_front_porch_lines; i++)
-    {
-      PORTD &= 0b00000011;
-      PORTB &= 0b11111000;
-      Constant_Horizontal_Line();
-    }
+  asm("ldi r18, 0x18");
+  asm("out 0x04, r18");
 
-    PORTB &= 0b11101111;
-    for (unsigned int i = 0; i < vertical_sync_pulse_lines; i++)
-    {
-      PORTD &= 0b00000011;
-      PORTB &= 0b11111000;
-      Constant_Horizontal_Line();
-    }
-    PORTB |= 0b00010000;
+  // Visible area (243840 wanted 244052) (diff 212)
+  asm("ldi ZL, lo8(480)"); // Load low bits of counter (1)
+  asm("ldi ZH, hi8(480)"); // Load high bits of counter (1)
 
-    for (unsigned int i = 0; i < vertical_back_porch_lines; i++)
-    {
-      PORTD &= 0b11111111;
-      PORTB &= 0b11111111;
-      Constant_Horizontal_Line();
-    }
-  }
+  asm("vva:");
+  Visible_Horizontal_Line(); // 504
+  asm("sbiw Z, 0x1"); // 2
+  asm("brne vva"); // 2/1
+
+  // Visible area burn
+  asm("ldi r18, 42"); // 1
+
+  asm("va_burn:");
+  asm("nop\nnop"); // 2
+  asm("dec r18"); //1
+  asm("brne va_burn"); //2/1
+
+  // Front porch (5084 wanted 5084)
+  asm("ldi r19, 10"); // 1
+
+  asm("vfp:");
+  Vertical_Blanking_Line(); // 506
+  asm("dec r19"); // 1
+  asm("brne vfp"); // 2/1
+  asm("nop\nnop"); // 2
+
+  // Sync pulse 1017
+  Vertical_Sync_Pulse(); // 506
+  asm("jmp vsp"); // 2 + 506 = 508
+  asm("nop\nnop\nnop"); // 3
+
+  // Back porch (16779 wanted 16778) diff +1
+  asm("ldi r19, 33"); // 1
+
+  asm("vbp:");
+  Vertical_Blanking_Line2(); // 506
+  asm("dec r19"); // 1
+  asm("brne vbp"); // 2/1
+
+  asm("jmp sof"); // 2
 }
 
-void Constant_Horizontal_Line()
+void Visible_Horizontal_Line()
 {
-  // Visible area
-  __builtin_avr_delay_cycles(horizontal_visible_area_time_us / arduino_clock_time_us - 6);
+  // Visible area (407)
+  asm("ldi r20, 0x87"); // (1)
+  
+  asm("hva:");
+  asm("ldi r18, 0xfc"); // 1
+  asm("out 0x0a, r18"); // 1
+  asm("dec r20"); //(1)
+  asm("brne hva"); //(2, 1)
 
-  // Vertical Front porch
-  PORTD &= 0b00000011;
-  PORTB &= 0b11111000;
-  __builtin_avr_delay_cycles(horizontal_front_porch_time_us / arduino_clock_time_us - 5);
+  // Front porch (10)
+  asm("ldi r18, 0x00"); //(1)
+  asm("out 0x0a, r18"); // (1)
+  asm("ldi r18, 0x18"); //(1)
+  asm("out 0x04, r18"); // (1)
+  asm("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n"); // (6)
 
-  // Sync pulse
-  PORTB &= 0b11110111;
-  __builtin_avr_delay_cycles(horizontal_sync_pulse_time_us / arduino_clock_time_us - 2);
-  PORTB |= 0b00001000;
+  // Sync pulse (61)
+  asm("ldi r18, 0x10"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x13"); // 1
 
-  __builtin_avr_delay_cycles(horizontal_back_porch_time_us / arduino_clock_time_us - 9);
+  asm("hsp:");
+  asm("dec r18"); // 1
+  asm("brne hsp"); // 2/1
+
+  // Back porch (26)
+  asm("ldi r18, 0x18"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x07"); // 1
+
+  asm("hbp:");
+  asm("dec r18"); // 1
+  asm("brne hbp"); // 2/1
+  asm("nop"); // 1
+}
+
+void Vertical_Blanking_Line()
+{
+  // Front porch and visible area (417)
+  asm("ldi r18, 0x00"); // 1
+  asm("out 0x0a, r18"); // 1
+  asm("ldi r18, 0x18"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 102"); // 1
+
+  asm("vbl_fp:");
+  asm("nop"); // 1
+  asm("dec r18"); // 1
+  asm("brne vbl_fp"); // 2/1
+  asm("nop\nnop\nnop"); //3
+
+  // Sync pulse (61)
+  asm("ldi r18, 0x10"); // 1  
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x13"); // 1
+
+  asm("vbl_hsp:");
+  asm("dec r18"); // 1
+  asm("brne vbl_hsp"); // 2/1
+
+  // Back porch (28)
+  asm("ldi r18, 0x18"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x07"); // 1
+
+  asm("vbl_hbp:");
+  asm("dec r18"); // 1
+  asm("brne vbl_hbp"); // 2/1
+  asm("nop\nnop\nnop"); // 3
+}
+
+void Vertical_Blanking_Line2()
+{
+  // Front porch and visible area (417)
+  asm("ldi r18, 0x00"); // 1
+  asm("out 0x0a, r18"); // 1
+  asm("ldi r18, 0x18"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 102"); // 1
+
+  asm("vbl2_fp:");
+  asm("nop"); // 1
+  asm("dec r18"); // 1
+  asm("brne vbl2_fp"); // 2/1
+  asm("nop\nnop\nnop"); //3
+
+  // Sync pulse (61)
+  asm("ldi r18, 0x10"); // 1  
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x13"); // 1
+
+  asm("vbl2_hsp:");
+  asm("dec r18"); // 1
+  asm("brne vbl2_hsp"); // 2/1
+
+  // Back porch (28)
+  asm("ldi r18, 0x18"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x07"); // 1
+
+  asm("vbl2_hbp:");
+  asm("dec r18"); // 1
+  asm("brne vbl2_hbp"); // 2/1
+  asm("nop\nnop\nnop"); // 3
+}
+
+void Vertical_Sync_Pulse()
+{
+  asm("vsp:");
+  
+  // Front porch and visible area (417)
+  asm("ldi r18, 0x00"); // 1
+  asm("out 0x0a, r18"); // 1
+  asm("ldi r18, 0x08"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 102"); // 1
+
+  asm("vsp_fp:");
+  asm("nop"); // 1
+  asm("dec r18"); // 1
+  asm("brne vsp_fp"); // 2/1
+  asm("nop\nnop\nnop"); //3
+
+  // Sync pulse (61)
+  asm("ldi r18, 0x00"); // 1  
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x13"); // 1
+
+  asm("vsp_hsp:");
+  asm("dec r18"); // 1
+  asm("brne vsp_hsp"); // 2/1
+
+  // Back porch (28)
+  asm("ldi r18, 0x08"); // 1
+  asm("out 0x04, r18"); // 1
+  asm("ldi r18, 0x07"); // 1
+
+  asm("vsp_hbp:");
+  asm("dec r18"); // 1
+  asm("brne vsp_hbp"); // 2/1
+  asm("nop\nnop\nnop"); // 3
 }
