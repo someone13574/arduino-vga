@@ -2,14 +2,10 @@
 // Y = r29:r28
 // Z = r31:r30
 
-inline void Visible_Line();
-__attribute__((always_inline));
-inline void Front_Porch_Line();
-__attribute__((always_inline));
-inline void Sync_Pulse_Line();
-__attribute__((always_inline));
-inline void Back_Porch_Line();
-__attribute__((always_inline));
+inline void Visible_Line() __attribute__((always_inline));
+inline void Front_Porch_Line() __attribute__((always_inline));
+inline void Sync_Pulse_Line() __attribute__((always_inline));
+inline void Back_Porch_Line() __attribute__((always_inline));
 
 void setup()
 {
@@ -18,7 +14,7 @@ void setup()
   asm("out 0x04, r18"); // Set DDRB
 
   asm("ldi r18, 0b00011111");
-  asm("out 0x2a, r18"); // Set DDRD
+  asm("out 0x0a, r18"); // Set DDRD
 }
 
 void loop()
@@ -33,7 +29,7 @@ void loop()
   Visible_Line();           // 504
   asm("sbiw Z, 1");         // 2
   asm("brne visible_area"); // 2/1
-
+  
   // Front porch (5084.4091 cycle budget) 5052
   asm("ldi r22, 10"); // 1
 
@@ -70,6 +66,8 @@ void Visible_Line() // 504
 {
   // Visible area (406.7527 cycle budget, no restrictions) 407
   asm("ldi r25, 133"); // 1
+  asm("ldi r24, 0b00011100");
+  asm("out 0x0b, r24");
 
   asm("visible_line_visible_area:");
   asm("dec r25");                        // 1
@@ -80,7 +78,7 @@ void Visible_Line() // 504
   asm("out 0x05, r24");       // 1     PORTB
   asm("out 0x0b, r25");       // 1     PORTD
   asm("ldi r25, 2");          // 1 (set for front porch counter)
-  asm("nop \n nop");          // 1
+  //asm("nop \n nop");          // 1
 
   // Front porch (10.1688 cycle budget, enter restriction) 10
   asm("visible_line_front_porch:");
@@ -99,7 +97,7 @@ void Visible_Line() // 504
   asm("brne visible_line_sync_pulse"); // 2/1
 
   asm("nop");           // 1
-  asm("out 0x05, r24"); // 1
+  asm("out 0x05, r23"); // 1
 
   // Back porch (30.5065 cycle budget, enter restriction) 26
   asm("ldi r25, 8"); // 1
@@ -131,7 +129,7 @@ void Front_Porch_Line() // 505
   asm("brne front_porch_line_sync_pulse"); // 2/1
 
   asm("nop");           // 1
-  asm("out 0x05, r24"); // 1
+  asm("out 0x05, r23"); // 1
 
   // Back porch (30.5065 cycle budget, enter restriction) 27
   asm("ldi r25, 8"); // 1
@@ -164,7 +162,7 @@ void Sync_Pulse_Line() // 505
   asm("brne sync_pulse_line_sync_pulse"); // 2/1
 
   asm("nop");           // 1
-  asm("out 0x05, r24"); // 1
+  asm("out 0x05, r23"); // 1
 
   // Back porch (30.5065 cycle budget, enter restriction) 27
   asm("ldi r25, 8"); // 1
@@ -197,7 +195,7 @@ void Back_Porch_Line() // 505
   asm("brne back_porch_line_sync_pulse"); // 2/1
 
   asm("nop");           // 1
-  asm("out 0x05, r24"); // 1
+  asm("out 0x05, r23"); // 1
 
   // Back porch (30.5065 cycle budget, enter restriction) 27
   asm("ldi r25, 8"); // 1
