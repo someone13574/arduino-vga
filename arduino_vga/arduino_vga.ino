@@ -9,11 +9,31 @@ inline void Back_Porch_Line() __attribute__((always_inline));
 
 void setup()
 {
-
 }
 
 void loop()
-{
+{ 
+  // Load test pattern
+  asm("ldi XL, lo8(0x80)");
+  asm("ldi XH, hi8(0x80)");
+  
+  asm("ldi ZL, lo8(60)");
+  asm("ldi ZH, hi8(60)");
+  asm("load_line:");
+  asm("ldi r25, 66");
+  asm("load_pixel:");
+
+  asm("mov r24, r25");
+  asm("eor r24, ZL");
+  asm("andi r24, 0b00011100");
+  asm("st X+, 0b00011100");
+  
+  asm("dec r25");
+  asm("brne load_pixel");
+  
+  asm("sbiw Z, 1");
+  asm("brne load_line");
+  
   // Set pins 2-12 to outputs
   asm("ldi r18, 0b11111100");
   asm("out 0x04, r18"); // Set DDRB
@@ -28,6 +48,9 @@ void loop()
   asm("ldi r20, 0");
   
   asm("start_of_frame:");
+
+  asm("ldi XL, lo8(0x80)");
+  asm("ldi XH, hi8(0x80)");
 
   // Visible area (244051.6385 cycle budget) 243843       244051.695652
   asm("ldi ZL, lo8(480)"); // 1
@@ -73,14 +96,19 @@ void loop()
 void Visible_Line() // 504    .434663542 every 2.3        504.434782609
 {
   // Visible area (406.7527 cycle budget, no restrictions) 407
-  asm("ldi r25, 79"); // 1
-  asm("ldi r24, 0b00011100");
-  asm("ldi r23, 0b00011100");
-  asm("out 0x0b, r24");
+  asm("ldi r25, 66"); // 1
+  //asm("ldi r24, 0b00011100");
+  //asm("ldi r23, 0b00011100");
+  //asm("out 0x0b, r24");
 
   asm("visible_line_visible_area:");
-  asm("eor r24, r23"); //1
-  asm("out 0x0b, r24"); //1
+
+  asm("ld r24, X+");
+  asm("out 0x0b, r24");
+
+  
+  //asm("eor r24, r23"); //1
+  //asm("out 0x0b, r24"); //1
   asm("dec r25");                        // 1
   asm("brne visible_line_visible_area"); // 2/1
 
@@ -89,7 +117,7 @@ void Visible_Line() // 504    .434663542 every 2.3        504.434782609
   asm("out 0x05, r24");       // 1     PORTB
   asm("out 0x0b, r25");       // 1     PORTD
   asm("ldi r25, 2");          // 1 (set for front porch counter)
-  asm("nop \n nop");          // 2
+  asm("nop \n nop \n nop");          // 2
 
   // Front porch (10.1688 cycle budget, enter restriction) 10
   asm("visible_line_front_porch:");
