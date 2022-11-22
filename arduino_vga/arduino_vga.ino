@@ -9,16 +9,22 @@ inline void Back_Porch_Line() __attribute__((always_inline));
 
 void setup()
 {
+
+}
+
+void loop()
+{
   // Set pins 2-12 to outputs
   asm("ldi r18, 0b11111100");
   asm("out 0x04, r18"); // Set DDRB
 
   asm("ldi r18, 0b00011111");
   asm("out 0x0a, r18"); // Set DDRD
-}
 
-void loop()
-{
+  // Disable interrupts
+  asm("cli");
+
+  // Test output start state
   asm("ldi r20, 0");
   
   asm("start_of_frame:");
