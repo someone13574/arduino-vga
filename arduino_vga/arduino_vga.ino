@@ -17,21 +17,23 @@ void loop()
   asm("ldi XL, lo8(0x80)");
   asm("ldi XH, hi8(0x80)");
   
-  asm("ldi ZL, lo8(60)");
-  asm("ldi ZH, hi8(60)");
+  asm("ldi r23, 20");
   asm("load_line:");
   asm("ldi r25, 66");
   asm("load_pixel:");
 
   asm("mov r24, r25");
-  asm("eor r24, ZL");
-  asm("andi r24, 0b00011100");
-  asm("st X+, 0b00011100");
+  asm("st X+, r24");
+  
+  //asm("mov r24, r25");
+  //asm("lsl r24 \n lsl r24");
+  //asm("andi r24, 0b00000100");
+  //asm("ldi r22, 0xFF");
+  //asm("st X+, r22");
   
   asm("dec r25");
   asm("brne load_pixel");
-  
-  asm("sbiw Z, 1");
+  asm("dec r23");
   asm("brne load_line");
   
   // Set pins 2-12 to outputs
@@ -161,7 +163,8 @@ void Visible_Line() // 504    .434663542 every 2.3        504.434782609
   asm("skip_reset:");
   asm("inc r20"); // 1
   asm("nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop");
-  
+  //asm("ldi XL, lo8(0x80)");
+  //asm("ldi XH, hi8(0x80)");
 }
 
 void Front_Porch_Line() // 505      505.434782609
