@@ -18,15 +18,18 @@
 
 void setup()
 {
+       
 }
 
 void loop()
 {
+  
   asm volatile (
     // Set pins to output
-    "ldi r25, 0b11111100      \n"
+    
+    "ldi r25, 0b00011000      \n"
     "out 0x04, r25            \n"
-    "ldi r25, 0b00000011      \n"
+    "ldi r25, 0b11111100      \n"
     "out 0x0a, r25            \n"
 
     // Load tile descriptors
@@ -43,19 +46,19 @@ void loop()
     // Load test tile
     "ldi XL, lo8(0x24e)       \n"
     "ldi XH, hi8(0x24e)       \n"
-    "ldi r25, 0b00000000      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00000100      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00001000      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00001100      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00010000      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00010100      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00011000      \n"
+    "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
     "ldi r25, 0b00011100      \n"
     "st X+, r25               \n"
@@ -64,15 +67,14 @@ void loop()
     "start_of_frame:                  \n"
 
       // Set tile descriptor start address
-      "ldi ZL, 0xe8                   \n"
-      "ldi ZH, 0x00                   \n"
+      "ldi ZL, lo8(0x6e)              \n"
+      "ldi ZH, hi8(0x00)              \n"
     
       // Visible area loop (vertical resolution of 80, 6 pixels per pixel)
-      "ldi r16, 80                    \n"
+      "ldi r16, 100                    \n"
       "visible_area_loop:             \n"
-        "rjmp load_line               \n"
+        //"rjmp load_line               \n"
         "load_line_ret:               \n"
-
         "rcall visible_line           \n"
         "rcall visible_line           \n"
         "rcall visible_line           \n"
@@ -81,14 +83,18 @@ void loop()
       
         "dec r16                      \n"
         "brne visible_area_loop       \n"
-
+ 
       // Front porch
-      "ldi r16, 10                    \n"
+      
+      "ldi r16, 1                    \n"
       "front_porch_loop:              \n"
         "rjmp front_porch_line        \n"
         "front_porch_line_ret:        \n"
         "dec r16                      \n"
         "brne front_porch_loop        \n"
+
+        "wdr \n"
+     "jmp start_of_frame            \n"
 
      // Sync pulse
      "ldi r25, 0b00001000             \n"
@@ -111,7 +117,9 @@ void loop()
        "brne back_porch_loop         \n"
 
      // Return to start
-     "rjmp start_of_frame            \n"
+     //"sync_pulse_line_ret: \n front_porch_line_ret:\nback_porch_line_ret:\n"
+     "wdr \n"
+     "jmp start_of_frame            \n"
         
     // Load line subroutine
     "load_line:                      \n"
@@ -130,11 +138,11 @@ void loop()
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 4)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 8)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 16)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
         "add YL, r24                  \n" // 1    Offset address by 0x24e
@@ -150,14 +158,14 @@ void loop()
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 4)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 8)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 16)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x24d
+        "add YL, r24                  \n" // 1    Offset address by 0x24e
         "adc YH, r23                  \n" // 1
 
         // Write tile address
@@ -170,14 +178,14 @@ void loop()
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 4)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 8)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 16)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x24d
+        "add YL, r24                  \n" // 1    Offset address by 0x24e
         "adc YH, r23                  \n" // 1
 
         // Write tile address
@@ -190,14 +198,14 @@ void loop()
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 4)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 8)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 16)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x24d
+        "add YL, r24                  \n" // 1    Offset address by 0x24e
         "adc YH, r23                  \n" // 1
 
         // Write tile address
@@ -210,14 +218,14 @@ void loop()
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 4)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 8)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 16)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x24d
+        "add YL, r24                  \n" // 1    Offset address by 0x24e
         "adc YH, r23                  \n" // 1
 
         // Write tile address
@@ -230,14 +238,14 @@ void loop()
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 4)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 8)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
         "rol YH                       \n" // 1
-        "lsl YL                       \n" // 1    Multiply by 2 (now 16)
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x24d
+        "add YL, r24                  \n" // 1    Offset address by 0x24e
         "adc YH, r23                  \n" // 1
 
         // Write tile address
@@ -279,6 +287,9 @@ void loop()
         // Tile 1 (68)
         "lds XL, 0x60                 \n" // 2    Load tile address
         "lds XH, 0x61                 \n" // 2
+        //"ldi XL, 0x68\n"
+        //"ldi XH, 0x68\n"
+        //"nop \n nop \n"
 
         "ld r25, X+                   \n" // 3
         "out 0x0b, r25                \n" // 1
