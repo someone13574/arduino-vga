@@ -3,9 +3,9 @@
 // Z = r31:r30
 
 // Memory layout
-// Current line         0x100  to 0x10d  (6 tiles)
-// Tile descriptors     0x10e  to 0x2ed (480 descriptors, 6 per line)
-// Tile data            0x2ee to 0x8ee (96 tiles)
+// Current line         0x100  to 0x10f  (6 tiles)
+// Tile descriptors     0x110  to 0x38f (640 descriptors, 8 per line)
+// Tile data            0x390 to 0x8f0 (86 tiles)
 
 // Tile address
 // 16-bit address
@@ -34,10 +34,10 @@ void loop()
     "out 0x0a, r25            \n"
 
     // Load tile descriptors
-    "ldi XL, lo8(0x10e)              \n"
-    "ldi XH, hi8(0x10e)              \n"
-    "ldi YL, lo8(480)                \n"
-    "ldi YH, hi8(480)                \n"
+    "ldi XL, lo8(0x110)              \n"
+    "ldi XH, hi8(0x110)              \n"
+    "ldi YL, lo8(640)                \n"
+    "ldi YH, hi8(640)                \n"
     "ldi r24, 0x00                   \n" // Set all tile descriptors to the first index
     "load_tile_descriptors:          \n"
       "st X+, r24                    \n"
@@ -45,8 +45,8 @@ void loop()
       "brne load_tile_descriptors    \n"
 
     // Load test line
-    "ldi r25, lo8(0x2ee)\n"
-    "ldi r24, hi8(0x2ee)\n"
+    "ldi r25, lo8(0x390)\n"
+    "ldi r24, hi8(0x390)\n"
     "sts 0x100, r25\n"
     "sts 0x101, r24\n"
     "sts 0x102, r25\n"
@@ -61,8 +61,8 @@ void loop()
     "sts 0x10b, r24\n"
 
     // Load test tile
-    "ldi XL, lo8(0x2ee)       \n"
-    "ldi XH, hi8(0x2ee)       \n"
+    "ldi XL, lo8(0x390)       \n"
+    "ldi XH, hi8(0x390)       \n"
     "ldi r25, 0b00000000      \n"
     "st X+, r25               \n"
     "st X+, r25               \n"
@@ -309,11 +309,11 @@ void loop()
       // r25 = Pixel color
       
       // Visible area
-        // Tile 1 (68)
+        // Tile 1 (52)
         //"lds XL, 0x100                 \n" // 2    Load tile address
         //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x2ee)\n"
-        "ldi XH, hi8(0x2ee)\n"
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
         "nop \n nop \n"
 
         "ld r25, X+                   \n" // 2
@@ -349,217 +349,279 @@ void loop()
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        "nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n"
-
-        // Tile 2 (68)
-        //"lds XL, 0x102                 \n" // 2    Load tile address
-        //"lds XH, 0x103                 \n" // 2
-        "ldi XL, lo8(0x2ee)\n"
-        "ldi XH, hi8(0x2ee)\n"
+        // Tile 2 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
         "nop \n nop \n"
 
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        "nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n"
-
-        // Tile 3 (68)
-        //"lds XL, 0x104                 \n" // 2    Load tile address
-        //"lds XH, 0x105                 \n" // 2
-        "ldi XL, lo8(0x2ee)\n"
-        "ldi XH, hi8(0x2ee)\n"
+        // Tile 3 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
         "nop \n nop \n"
 
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        "nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n"
-
-        // Tile 4 (68)
-        //"lds XL, 0x106                 \n" // 2    Load tile address
-        //"lds XH, 0x107                 \n" // 2
-        "ldi XL, lo8(0x2ee)\n"
-        "ldi XH, hi8(0x2ee)\n"
+        // Tile 2 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
         "nop \n nop \n"
 
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        "nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n"
-
-        // Tile 5 (68)
-        //"lds XL, 0x108                 \n" // 2    Load tile address
-        //"lds XH, 0x109                 \n" // 2
-        "ldi XL, lo8(0x2ee)\n"
-        "ldi XH, hi8(0x2ee)\n"
+        // Tile 2 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
         "nop \n nop \n"
 
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        "nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n"
-
-        // Tile 6 (60)
-        //"lds XL, 0x10a                 \n" // 2    Load tile address
-        //"lds XH, 0x10b                 \n" // 2
-        "ldi XL, lo8(0x2ee)\n"
-        "ldi XH, hi8(0x2ee)\n"
+        // Tile 2 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
         "nop \n nop \n"
 
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
-        "ld r25, X+                   \n" // 3
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        "nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n"
+        // Tile 2 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
+        "nop \n nop \n"
 
-        "nop                          \n" // 1
-        "nop                          \n" // 1
-        "nop                          \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+
+        // Tile 2 (52)
+        //"lds XL, 0x100                 \n" // 2    Load tile address
+        //"lds XH, 0x101                 \n" // 2
+        "ldi XL, lo8(0x390)\n"
+        "ldi XH, hi8(0x390)\n"
+        "nop \n nop \n"
+
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        "ld r25, X+                   \n" // 2
+        "out 0x0b, r25                \n" // 1
+        
+        "nop \n nop \n"
         "ldi r25, 0b00000000          \n" // 1
         
         // Front porch (10)
