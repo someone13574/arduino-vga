@@ -30,7 +30,7 @@ void loop()
     // Set pins to output
     "ldi r25, 0b00011000      \n"
     "out 0x04, r25            \n"
-    "ldi r25, 0b11111100      \n"
+    "ldi r25, 0b11111111      \n"
     "out 0x0a, r25            \n"
 
     // Load tile descriptors
@@ -47,73 +47,85 @@ void loop()
     // Load test line
     "ldi r25, lo8(0x390)\n"
     "ldi r24, hi8(0x390)\n"
-    "sts 0x100, r25\n"
-    "sts 0x101, r24\n"
-    "sts 0x102, r25\n"
-    "sts 0x103, r24\n"
-    "sts 0x104, r25\n"
-    "sts 0x105, r24\n"
-    "sts 0x106, r25\n"
-    "sts 0x107, r24\n"
-    "sts 0x108, r25\n"
-    "sts 0x109, r24\n"
-    "sts 0x10a, r25\n"
-    "sts 0x10b, r24\n"
+    "sts 0x110, r25\n"
+    "sts 0x111, r24\n"
+    "sts 0x112, r25\n"
+    "sts 0x113, r24\n"
+    "sts 0x114, r25\n"
+    "sts 0x115, r24\n"
+    "sts 0x116, r25\n"
+    "sts 0x117, r24\n"
+    "sts 0x118, r25\n"
+    "sts 0x119, r24\n"
+    "sts 0x11a, r25\n"
+    "sts 0x11b, r24\n"
+    "sts 0x11c, r25\n"
+    "sts 0x11d, r24\n"
+    "sts 0x11e, r25\n"
+    "sts 0x11f, r24\n"
 
     // Load test tile
     "ldi XL, lo8(0x390)       \n"
     "ldi XH, hi8(0x390)       \n"
     "ldi r25, 0b00000000      \n"
+    "ldi r24, 0b00000001      \n"
+    "ldi r23, 0b00000010      \n"
+    "ldi r22, 0b00000011      \n"
     "st X+, r25               \n"
-    "st X+, r25               \n"
+    "st X+, r24               \n"
+    "st X+, r23               \n"
+    "st X+, r22               \n"
     "ldi r25, 0b00000100      \n"
+    "ldi r24, 0b00000101      \n"
+    "ldi r23, 0b00000110      \n"
+    "ldi r22, 0b00000111      \n"
     "st X+, r25               \n"
+    "st X+, r24               \n"
+    "st X+, r23               \n"
+    "st X+, r22               \n"
+    "ldi r25, 0b00000111      \n"
+    "ldi r24, 0b00000110      \n"
+    "ldi r23, 0b00000101      \n"
+    "ldi r22, 0b00000100      \n"
     "st X+, r25               \n"
-    "ldi r25, 0b00001000      \n"
+    "st X+, r24               \n"
+    "st X+, r23               \n"
+    "st X+, r22               \n"
+    "ldi r25, 0b00000011      \n"
+    "ldi r24, 0b00000010      \n"
+    "ldi r23, 0b00000001      \n"
+    "ldi r22, 0b00000000      \n"
     "st X+, r25               \n"
-    "st X+, r25               \n"
-    "ldi r25, 0b00001100      \n"
-    "st X+, r25               \n"
-    "st X+, r25               \n"
-    "ldi r25, 0b00010000      \n"
-    "st X+, r25               \n"
-    "st X+, r25               \n"
-    "ldi r25, 0b00010100      \n"
-    "st X+, r25               \n"
-    "st X+, r25               \n"
-    "ldi r25, 0b00011000      \n"
-    "st X+, r25               \n"
-    "st X+, r25               \n"
-    "ldi r25, 0b00011100      \n"
-    "st X+, r25               \n"
-    "st X+, r25               \n"
+    "st X+, r24               \n"
+    "st X+, r23               \n"
+    "st X+, r22               \n"
 
     // Start loop
     "start_of_frame:                  \n"
 
       // Set tile descriptor start address
-      "ldi ZL, lo8(0x10e)             \n"
-      "ldi ZH, hi8(0x10e)             \n"
+      "ldi ZL, lo8(0x110)             \n"
+      "ldi ZH, hi8(0x110)             \n"
     
       // Visible area loop (vertical resolution of 80, 6 pixels per pixel)
-      "ldi r16, 100                    \n"
+      "ldi r16, 80                    \n"
       "visible_area_loop:             \n"
-        //"rjmp load_line               \n"
+        "rjmp load_line               \n" // 2+501+2+3=508
         "load_line_ret:               \n"
-        "rcall visible_line           \n"
-        "rcall visible_line           \n"
-        "rcall visible_line           \n"
-        "rcall visible_line           \n"
-        "rcall visible_line           \n"
+        "rcall visible_line           \n" // 3+4+501=508
+        "rcall visible_line           \n" // 3+4+501=508
+        "rcall visible_line           \n" // 3+4+501=508
+        "rcall visible_line           \n" // 3+4+501=508
+        "rcall visible_line           \n" // 3+4+501=508
       
         "dec r16                      \n"
         "brne visible_area_loop       \n"
  
       // Front porch
       
-      "ldi r16, 1                    \n"
+      "ldi r16, 10                    \n"
       "front_porch_loop:              \n"
-        "rjmp front_porch_line        \n"
+        "rjmp front_porch_line        \n" // 2+2+?+501=508
         "front_porch_line_ret:        \n"
         "dec r16                      \n"
         "brne front_porch_loop        \n"
@@ -124,7 +136,7 @@ void loop()
      // Sync pulse
      "ldi r25, 0b00001000             \n"
      "out 0x05, r25                   \n"
-     "ldi r16, 1                      \n"
+     "ldi r16, 2                      \n"
      "sync_pulse_loop:                \n"
         "rjmp sync_pulse_line         \n"
         "sync_pulse_line_ret:         \n"
@@ -134,7 +146,7 @@ void loop()
      "out 0x05, r25                   \n"
 
      // Back porch
-     "ldi r16, 1                    \n"
+     "ldi r16, 33\n"
      "back_porch_loop:               \n"
        "rjmp back_porch_line         \n"
        "back_porch_line_ret:         \n"
@@ -154,10 +166,30 @@ void loop()
       // r23 = Tile data offset high
 
       // Set tile data offset
-      "ldi r24, lo8(0x2ee)            \n"
-      "ldi r23, hi8(0x2ee)            \n"
+      "ldi r24, lo8(0x390)            \n" // 1
+      "ldi r23, hi8(0x390)            \n" // 1
 
       // First tile
+        // Get tile address
+        "ld YL, Z+                    \n" // 2    Copy tile index
+        "ldi YH, 0x00                 \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2
+        "rol YH                       \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
+        "rol YH                       \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
+        "rol YH                       \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
+        "rol YH                       \n" // 1
+
+        "add YL, r24                  \n" // 1    Offset address by 0x390
+        "adc YH, r23                  \n" // 1
+
+        // Write tile address
+        "sts 0x110, YL                 \n" // 2
+        "sts 0x111, YH                 \n" // 2
+
+      // 2 tile
         // Get tile address
         "ld YL, Z+                    \n" // 3    Copy tile index
         "ldi YH, 0x00                 \n" // 1
@@ -170,16 +202,16 @@ void loop()
         "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x2ee
+        "add YL, r24                  \n" // 1    Offset address by 0x390
         "adc YH, r23                  \n" // 1
 
         // Write tile address
-        "sts 0x100, YL                 \n" // 2
-        "sts 0x101, YH                 \n" // 2
+        "sts 0x112, YL                 \n" // 2
+        "sts 0x113, YH                 \n" // 2
 
-      // Second tile
+      // 3 tile
         // Get tile address
-        "ld YL, Z+                    \n" // 3
+        "ld YL, Z+                    \n" // 3    Copy tile index
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
@@ -190,16 +222,16 @@ void loop()
         "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x2ee
+        "add YL, r24                  \n" // 1    Offset address by 0x390
         "adc YH, r23                  \n" // 1
 
         // Write tile address
-        "sts 0x102, YL                 \n" // 2
-        "sts 0x103, YH                 \n" // 2
+        "sts 0x114, YL                 \n" // 2
+        "sts 0x115, YH                 \n" // 2
 
-      // Third tile
+      // 4 tile
         // Get tile address
-        "ld YL, Z+                    \n" // 3
+        "ld YL, Z+                    \n" // 3    Copy tile index
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
@@ -210,16 +242,16 @@ void loop()
         "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x2ee
+        "add YL, r24                  \n" // 1    Offset address by 0x390
         "adc YH, r23                  \n" // 1
 
         // Write tile address
-        "sts 0x104, YL                 \n" // 2
-        "sts 0x105, YH                 \n" // 2
+        "sts 0x116, YL                 \n" // 2
+        "sts 0x117, YH                 \n" // 2
 
-      // Forth tile
+      // 5 tile
         // Get tile address
-        "ld YL, Z+                    \n" // 3
+        "ld YL, Z+                    \n" // 3    Copy tile index
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
@@ -230,16 +262,16 @@ void loop()
         "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x2ee
+        "add YL, r24                  \n" // 1    Offset address by 0x390
         "adc YH, r23                  \n" // 1
 
         // Write tile address
-        "sts 0x106, YL                 \n" // 2
-        "sts 0x107, YH                 \n" // 2
+        "sts 0x118, YL                 \n" // 2
+        "sts 0x119, YH                 \n" // 2
 
-      // Fifth tile
+      // 6 tile
         // Get tile address
-        "ld YL, Z+                    \n" // 3
+        "ld YL, Z+                    \n" // 3    Copy tile index
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
@@ -250,16 +282,16 @@ void loop()
         "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x2ee
+        "add YL, r24                  \n" // 1    Offset address by 0x390
         "adc YH, r23                  \n" // 1
 
         // Write tile address
-        "sts 0x108, YL                 \n" // 2
-        "sts 0x109, YH                 \n" // 2
+        "sts 0x11a, YL                 \n" // 2
+        "sts 0x11b, YH                 \n" // 2
 
-      // Sixth tile
+      // 7 tile
         // Get tile address
-        "ld YL, Z+                    \n" // 3
+        "ld YL, Z+                    \n" // 3    Copy tile index
         "ldi YH, 0x00                 \n" // 1
         "lsl YL                       \n" // 1    Multiply by 2
         "rol YH                       \n" // 1
@@ -270,17 +302,38 @@ void loop()
         "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
         "rol YH                       \n" // 1
 
-        "add YL, r24                  \n" // 1    Offset address by 0x2ee
+        "add YL, r24                  \n" // 1    Offset address by 0x390
         "adc YH, r23                  \n" // 1
 
         // Write tile address
-        "sts 0x10a, YL                 \n" // 2
-        "sts 0x10b, YH                 \n" // 2
+        "sts 0x11c, YL                 \n" // 2
+        "sts 0x11d, YH                 \n" // 2
 
-        // Front porch (burn 309)
-        "ldi r25, 102                       \n" // 1
-        "load_line_front_porch:             \n" // 3 / 1
+      // 8 tile
+        // Get tile address
+        "ld YL, Z+                    \n" // 3    Copy tile index
+        "ldi YH, 0x00                 \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2
+        "rol YH                       \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2 (now 4x)
+        "rol YH                       \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2 (now 8x)
+        "rol YH                       \n" // 1
+        "lsl YL                       \n" // 1    Multiply by 2 (now 16x)
+        "rol YH                       \n" // 1
+
+        "add YL, r24                  \n" // 1    Offset address by 0x390
+        "adc YH, r23                  \n" // 1
+
+        // Write tile address
+        "sts 0x11e, YL                 \n" // 2
+        "sts 0x11f, YH                 \n" // 2
+
+        // Front porch (burn 279)
+        "ldi r25, 69                       \n" // 1
+        "load_line_front_porch:             \n" // 4 / 1
           "dec r25                          \n" // 1
+          "nop \n"  // 1
           "brne load_line_front_porch       \n" // 2 / 1
         "ldi r25, 0b00010000                \n" // 1
 
@@ -294,7 +347,7 @@ void loop()
 
         // Back porch (30.5064548163 cycles) (-2 -2 -3 = -7) (23)
         "out 0x05, r25                      \n" // 1
-        "ldi r25, 7                         \n" // 1
+        "ldi r25, 6                         \n" // 1
         "load_line_back_porch:              \n" // 3 / 1
           "dec r25                          \n" // 1
           "brne load_line_back_porch        \n" // 2 / 1
@@ -303,18 +356,15 @@ void loop()
 
         "rjmp load_line_ret                 \n" // 2
 
-    // Visible line subroutine
+    // Visible line subroutine 501
     "visible_line:                    \n"
       // X = pixel read address
       // r25 = Pixel color
       
-      // Visible area
+      // Visible area 407
         // Tile 1 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        "lds XL, 0x110                 \n" // 2    Load tile address
+        "lds XH, 0x111                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -350,11 +400,8 @@ void loop()
         "out 0x0b, r25                \n" // 1
 
         // Tile 2 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        "lds XL, 0x112                 \n" // 2    Load tile address
+        "lds XH, 0x113                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -390,11 +437,8 @@ void loop()
         "out 0x0b, r25                \n" // 1
 
         // Tile 3 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        "lds XL, 0x114                 \n" // 2    Load tile address
+        "lds XH, 0x115                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -429,12 +473,9 @@ void loop()
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        // Tile 2 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        // Tile 4 (52)
+        "lds XL, 0x116                 \n" // 2    Load tile address
+        "lds XH, 0x117                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -469,12 +510,9 @@ void loop()
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        // Tile 2 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        // Tile 5 (52)
+        "lds XL, 0x118                 \n" // 2    Load tile address
+        "lds XH, 0x119                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -509,12 +547,9 @@ void loop()
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        // Tile 2 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        // Tile 6 (52)
+        "lds XL, 0x11a                 \n" // 2    Load tile address
+        "lds XH, 0x11b                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -549,12 +584,9 @@ void loop()
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        // Tile 2 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        // Tile 7 (52)
+        "lds XL, 0x11c                 \n" // 2    Load tile address
+        "lds XH, 0x11d                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -589,12 +621,9 @@ void loop()
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
 
-        // Tile 2 (52)
-        //"lds XL, 0x100                 \n" // 2    Load tile address
-        //"lds XH, 0x101                 \n" // 2
-        "ldi XL, lo8(0x390)\n"
-        "ldi XH, hi8(0x390)\n"
-        "nop \n nop \n"
+        // Tile 8 (43)
+        "lds XL, 0x11e                 \n" // 2    Load tile address
+        "lds XH, 0x11f                 \n" // 2
 
         "ld r25, X+                   \n" // 2
         "out 0x0b, r25                \n" // 1
@@ -637,14 +666,13 @@ void loop()
            "brne visible_line_sync_pulse    \n" // 2 / 1
         "ldi r25, 0b00011000                \n" // 1
 
-        // Back porch (30.5064548163 cycles) (-4 -3 = -7)
+        // Back porch (30.5064548163 cycles) (23)
         "out 0x05, r25                      \n" // 1
-        "ldi r25, 7                         \n" // 1
+        "ldi r25, 6                         \n" // 1
         "visible_line_back_porch:           \n" // 3 / 1
           "dec r25                          \n" // 1
           "brne visible_line_back_porch     \n" // 2 / 1
-
-          "nop \n nop \n"
+        "nop \n nop \n" // 2
 
         "ret                                \n" // 4
 
@@ -665,10 +693,10 @@ void loop()
          "brne front_porch_line_sync_pulse    \n" // 2 / 1
       "ldi r25, 0b00011000                    \n" // 1
 
-      // Back porch (30.5064548163 cycles) (-2 -2 -3 = -7)
+      // Back porch (30.5064548163 cycles) (23)
       "out 0x05, r25                          \n" // 1
-      "ldi r25, 7                             \n" // 1
-      "front_porch_line_back_porch:           \n" // 4 / 1
+      "ldi r25, 6                             \n" // 1
+      "front_porch_line_back_porch:           \n" // 3 / 1
         "dec r25                              \n" // 1
         "brne front_porch_line_back_porch     \n" // 2 / 1
       "nop \n nop \n                            " // 2
@@ -692,9 +720,9 @@ void loop()
          "brne sync_pulse_line_sync_pulse     \n" // 2 / 1
       "ldi r25, 0b00001000                    \n" // 1
 
-      // Back porch (30.5064548163 cycles) (-2 -2 -3 = -7)
+      // Back porch (30.5064548163 cycles) (23)
       "out 0x05, r25                          \n" // 1
-      "ldi r25, 7                             \n" // 1
+      "ldi r25, 6                             \n" // 1
       "sync_pulse_line_back_porch:            \n" // 4 / 1
         "dec r25                              \n" // 1
         "brne sync_pulse_line_back_porch      \n" // 2 / 1
@@ -719,9 +747,9 @@ void loop()
          "brne back_porch_line_sync_pulse     \n" // 2 / 1
       "ldi r25, 0b00011000                    \n" // 1
 
-      // Back porch (30.5064548163 cycles) (-2 -2 -3 = -7)
+      // Back porch (30.5064548163 cycles) (23)
       "out 0x05, r25                          \n" // 1
-      "ldi r25, 7                             \n" // 1
+      "ldi r25, 6                             \n" // 1
       "back_porch_line_back_porch:            \n" // 4 / 1
         "dec r25                              \n" // 1
         "brne back_porch_line_back_porch      \n" // 2 / 1
