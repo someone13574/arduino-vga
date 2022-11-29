@@ -41,6 +41,7 @@
 // 25 = BBBB BBBB BBBB BGGB
 // 26 = GGGG GGGG BBBB BBBB
 // 27 = BBBB BBBB BBBB BBAA
+// 28 = BBBB BBBG BBBB BBBB
 
 // Number 0
 // BBBB AAAA BBBB BBBB = 1
@@ -161,6 +162,9 @@
 // Right paddle
 // BBBB BBBB BBBB BBAA = 27
 
+// Right wall
+// BBBB BBBG BBBB BBBB = 28
+
 void setup()
 {
 }
@@ -175,11 +179,12 @@ void loop()
   asm("ldi r25, 0b11111111              ");
   asm("out 0x0a, r25                    ");
 
+  // Set inital ball position
+
   // Load tile data
   asm("rcall load_tiles                ");
 
   // Load descriptors
-  //r25 = x, r24 = y, r23 = index)
 
   // Clear descriptors
   asm("ldi r25, 0");
@@ -283,6 +288,34 @@ void loop()
   asm("ldi r23, 26");
   asm("rcall write_descriptor");
 
+  asm("ldi r25, 3");
+  asm("ldi r24, 15");
+  asm("ldi r23, 25");
+  asm("middle_line_descriptor_write:");
+    asm("rcall write_descriptor");
+    asm("inc r24");
+    asm("inc r24");
+    asm("cpi r24, 75");
+    asm("brbs 0, middle_line_descriptor_write");
+
+  asm("ldi r25, 0");
+  asm("ldi r24, 14");
+  asm("ldi r23, 21");
+  asm("left_wall_descriptor_write:");
+    asm("rcall write_descriptor");
+    asm("inc r24");
+    asm("cpi r24, 75");
+    asm("brbs 0, left_wall_descriptor_write");
+
+  asm("ldi r25, 7");
+  asm("ldi r24, 14");
+  asm("ldi r23, 28");
+  asm("right_wall_descriptor_write:");
+    asm("rcall write_descriptor");
+    asm("inc r24");
+    asm("cpi r24, 75");
+    asm("brbs 0, right_wall_descriptor_write");
+
   // Start loop
   asm("start_of_frame:                  ");
 
@@ -294,12 +327,12 @@ void loop()
   asm("ldi r16, 80                    ");
   asm("visible_area_loop:             ");
   asm("rjmp load_line               "); // 2+501+2+3=508
-  asm("load_line_ret:               ");
+  asm("load_line_ret:           nop    ");
+  asm("rcall visible_line          \n nop "); // 3+4+501=508
   asm("rcall visible_line           "); // 3+4+501=508
+  asm("rcall visible_line          \n nop "); // 3+4+501=508
   asm("rcall visible_line           "); // 3+4+501=508
-  asm("rcall visible_line           "); // 3+4+501=508
-  asm("rcall visible_line           "); // 3+4+501=508
-  asm("rcall visible_line           "); // 3+4+501=508
+  asm("rcall visible_line          \n nop "); // 3+4+501=508
 
   asm("dec r16                      ");
   asm("brne visible_area_loop       ");
@@ -311,9 +344,6 @@ void loop()
   asm("front_porch_line_ret:        ");
   asm("dec r16                      ");
   asm("brne front_porch_loop        ");
-
-  //"wdr ");
-  // asm("rjmp start_of_frame            ");
 
   // Sync pulse
   asm("ldi r25, 0b00001000             ");
@@ -940,8 +970,8 @@ void loop()
 
   // Init load of tile (21 with rcall) (r25 = tile index)
   asm("init_tile_load:                  ");
-  asm("ldi r24, lo8(0x390)            "); // 1
-  asm("ldi r23, hi8(0x390)            "); // 1
+  asm("ldi r21, lo8(0x390)            "); // 1
+  asm("ldi r20, hi8(0x390)            "); // 1
 
   asm("mov XL, r25                    "); // 1    Copy tile index
   asm("ldi XH, 0x00                   "); // 1
@@ -955,8 +985,8 @@ void loop()
   asm("lsl XL                         "); // 1    Multiply by 2 (now 16x)
   asm("rol XH                         "); // 1
 
-  asm("add XL, r24                    "); // 1    Offset address by 0x390
-  asm("adc XH, r23                    "); // 1
+  asm("add XL, r21                    "); // 1    Offset address by 0x390
+  asm("adc XH, r20                    "); // 1
 
   asm("ret                            "); // 4
 
@@ -1552,4 +1582,26 @@ void loop()
   asm("st X+, r23                     "); // 14
   asm("st X+, r24                     "); // 15
   asm("st X+, r24                     "); // 16
+
+  // Tile 28 - BBBB BBBG BBBB BBBB
+  asm("ldi r25, 28                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r23                     "); // 1
+  asm("st X+, r23                     "); // 2
+  asm("st X+, r23                     "); // 3
+  asm("st X+, r23                     "); // 4
+  asm("st X+, r23                     "); // 5
+  asm("st X+, r23                     "); // 6
+  asm("st X+, r23                     "); // 7
+  asm("st X+, r22                     "); // 8
+  asm("st X+, r23                     "); // 9
+  asm("st X+, r23                     "); // 10
+  asm("st X+, r23                     "); // 11
+  asm("st X+, r23                     "); // 12
+  asm("st X+, r23                     "); // 13
+  asm("st X+, r23                     "); // 14
+  asm("st X+, r23                     "); // 15
+  asm("st X+, r23                     "); // 16
+
+  asm("ret");
 }
