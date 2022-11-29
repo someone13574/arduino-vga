@@ -188,8 +188,8 @@ void loop()
   asm("ldi YL, lo8(640)");
   asm("ldi YH, hi8(640)");
   asm("clear_descriptors_loop:");
-    asm("st X, r25");
-    asm("sbiw, Y, 1");
+    asm("st X+, r25");
+    asm("sbiw Y, 1");
     asm("brne clear_descriptors_loop");
   
   // Load scores
@@ -238,6 +238,50 @@ void loop()
   asm("ldi r24, 11");
   asm("ldi r23, 1");
   asm("rcall write_descriptor"); // Line 8, right
+
+  // Load top wall
+  asm("ldi r25, 0");
+  asm("ldi r24, 13");
+  asm("ldi r23, 23");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 1");
+  asm("ldi r23, 24");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 2");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 3");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 4");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 5");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 6");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 7");
+  asm("ldi r23, 26");
+  asm("rcall write_descriptor");
+
+  // Load bottom wall
+  asm("ldi r25, 0");
+  asm("ldi r24, 75");
+  asm("ldi r23, 23");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 1");
+  asm("ldi r23, 24");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 2");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 3");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 4");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 5");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 6");
+  asm("rcall write_descriptor");
+  asm("ldi r25, 7");
+  asm("ldi r23, 26");
+  asm("rcall write_descriptor");
 
   // Start loop
   asm("start_of_frame:                  ");
