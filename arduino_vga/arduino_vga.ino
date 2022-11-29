@@ -175,10 +175,69 @@ void loop()
   asm("ldi r25, 0b11111111              ");
   asm("out 0x0a, r25                    ");
 
-  // Load font
-  asm("ldi r24, 0b00000111              "); // White
-  asm("ldi r23, 0b00000000              "); // Black
+  // Load tile data
   asm("rcall load_tiles                ");
+
+  // Load descriptors
+  //r25 = x, r24 = y, r23 = index)
+
+  // Clear descriptors
+  asm("ldi r25, 0");
+  asm("ldi XL, lo8(0x110)");
+  asm("ldi XH, hi8(0x110)");
+  asm("ldi YL, lo8(640)");
+  asm("ldi YH, hi8(640)");
+  asm("clear_descriptors_loop:");
+    asm("st X, r25");
+    asm("sbiw, Y, 1");
+    asm("brne clear_descriptors_loop");
+  
+  // Load scores
+  asm("ldi r25, 3");
+  asm("ldi r24, 4");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 1, left
+  asm("ldi r24, 5");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 2, left
+  asm("ldi r24, 6");
+  asm("ldi r23, 3");
+  asm("rcall write_descriptor"); // Line 3, left
+  asm("ldi r24, 7");
+  asm("rcall write_descriptor"); // Line 4, left
+  asm("ldi r24, 8");
+  asm("rcall write_descriptor"); // Line 5, left
+  asm("ldi r24, 9");
+  asm("rcall write_descriptor"); // Line 6, left
+  asm("ldi r24, 10");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 7, left
+  asm("ldi r24, 11");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 8, left
+
+  asm("ldi r25, 4");
+  asm("ldi r24, 4");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 1, right
+  asm("ldi r24, 5");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 2, right
+  asm("ldi r24, 6");
+  asm("ldi r23, 3");
+  asm("rcall write_descriptor"); // Line 3, right
+  asm("ldi r24, 7");
+  asm("rcall write_descriptor"); // Line 4, right
+  asm("ldi r24, 8");
+  asm("rcall write_descriptor"); // Line 5, right
+  asm("ldi r24, 9");
+  asm("rcall write_descriptor"); // Line 6, right
+  asm("ldi r24, 10");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 7, right
+  asm("ldi r24, 11");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 8, right
 
   // Start loop
   asm("start_of_frame:                  ");
