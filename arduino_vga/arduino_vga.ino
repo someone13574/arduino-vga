@@ -179,7 +179,14 @@ void loop()
   asm("ldi r25, 0b11111111              ");
   asm("out 0x0a, r25                    ");
 
-  // Set inital ball position
+  // Set inital ball position and speed
+  asm("ldi r17, 0"); // Ball y-sub-pixel
+  asm("ldi r18, 39"); // Ball y-pixel
+
+  asm("ldi ZL, 0"); // Ball x-sub-pixel
+  asm("ldi ZH, 50"); // Ball x-pixel
+
+  asm("ldi 19, 0b00010001"); // xxxxyyyy ball velocity (1 = pos + 1/16)
 
   // Load tile data
   asm("rcall load_tiles                ");
@@ -320,8 +327,8 @@ void loop()
   asm("start_of_frame:                  ");
 
   // Set tile descriptor start address
-  asm("ldi ZL, lo8(0x110)             ");
-  asm("ldi ZH, hi8(0x110)             ");
+  asm("ldi XL, lo8(0x110)             ");
+  asm("ldi XH, hi8(0x110)             ");
 
   // Visible area loop (vertical resolution of 80, 6 pixels per pixel)
   asm("ldi r16, 80                    ");
@@ -349,11 +356,10 @@ void loop()
   asm("ldi r25, 0b00001000             ");
   asm("out 0x05, r25                   ");
   asm("ldi r16, 2                      ");
-  asm("sync_pulse_loop:                ");
-  asm("rjmp sync_pulse_line         ");
-  asm("sync_pulse_line_ret:         ");
-  asm("dec r16                      ");
-  asm("brne sync_pulse_loop         ");
+  asm("rjmp sync_pulse_line");
+  asm("sync_pulse_line_ret:");
+  asm("rjmp sync_pulse_compute_line");
+  asm("sync_pulse_compute_line_ret:");
   asm("ldi r25, 0b00011000             ");
   asm("out 0x05, r25                   ");
 
@@ -371,7 +377,7 @@ void loop()
 
   // Load line subroutine
   asm("load_line:                      ");
-  // Z = Tile descriptor address
+  // X = Tile descriptor address
   // Y = Tile data address
   // r24 = Tile data offset low
   // r23 = Tile data offset high
@@ -382,7 +388,7 @@ void loop()
 
   // First tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 2    Copy tile index
+  asm("ld YL, X+                    "); // 2    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -402,7 +408,7 @@ void loop()
 
   // 2 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 3    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -422,7 +428,7 @@ void loop()
 
   // 3 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 2    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -442,7 +448,7 @@ void loop()
 
   // 4 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 3    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -462,7 +468,7 @@ void loop()
 
   // 5 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 3    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -482,7 +488,7 @@ void loop()
 
   // 6 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 3    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -502,7 +508,7 @@ void loop()
 
   // 7 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 3    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -522,7 +528,7 @@ void loop()
 
   // 8 tile
   // Get tile address
-  asm("ld YL, Z+                    "); // 3    Copy tile index
+  asm("ld YL, X+                    "); // 3    Copy tile index
   asm("ldi YH, 0x00                 "); // 1
   asm("lsl YL                       "); // 1    Multiply by 2
   asm("rol YH                       "); // 1
@@ -574,291 +580,291 @@ void loop()
 
   // Visible area 407
   // Tile 1 (52)
-  asm("lds XL, 0x110                 "); // 2    Load tile address
-  asm("lds XH, 0x111                 "); // 2
+  asm("lds YL, 0x110                 "); // 2    Load tile address
+  asm("lds YH, 0x111                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 2 (52)
-  asm("lds XL, 0x112                 "); // 2    Load tile address
-  asm("lds XH, 0x113                 "); // 2
+  asm("lds YL, 0x112                 "); // 2    Load tile address
+  asm("lds YH, 0x113                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 3 (52)
-  asm("lds XL, 0x114                 "); // 2    Load tile address
-  asm("lds XH, 0x115                 "); // 2
+  asm("lds YL, 0x114                 "); // 2    Load tile address
+  asm("lds YH, 0x115                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 4 (52)
-  asm("lds XL, 0x116                 "); // 2    Load tile address
-  asm("lds XH, 0x117                 "); // 2
+  asm("lds YL, 0x116                 "); // 2    Load tile address
+  asm("lds YH, 0x117                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 5 (52)
-  asm("lds XL, 0x118                 "); // 2    Load tile address
-  asm("lds XH, 0x119                 "); // 2
+  asm("lds YL, 0x118                 "); // 2    Load tile address
+  asm("lds YH, 0x119                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 6 (52)
-  asm("lds XL, 0x11a                 "); // 2    Load tile address
-  asm("lds XH, 0x11b                 "); // 2
+  asm("lds YL, 0x11a                 "); // 2    Load tile address
+  asm("lds YH, 0x11b                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 7 (52)
-  asm("lds XL, 0x11c                 "); // 2    Load tile address
-  asm("lds XH, 0x11d                 "); // 2
+  asm("lds YL, 0x11c                 "); // 2    Load tile address
+  asm("lds YH, 0x11d                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   // Tile 8 (43)
-  asm("lds XL, 0x11e                 "); // 2    Load tile address
-  asm("lds XH, 0x11f                 "); // 2
+  asm("lds YL, 0x11e                 "); // 2    Load tile address
+  asm("lds YH, 0x11f                 "); // 2
 
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
-  asm("ld r25, X+                   "); // 2
+  asm("ld r25, Y+                   "); // 2
   asm("out 0x0b, r25                "); // 1
 
   asm("nop \n nop ");
@@ -933,13 +939,106 @@ void loop()
 
   // Back porch (30.5064548163 cycles) (23)
   asm("out 0x05, r25                          "); // 1
-  asm("ldi r25, 6                             "); // 1
+  asm("ldi r25, 7                             "); // 1
   asm("sync_pulse_line_back_porch:            "); // 4 / 1
   asm("dec r25                              ");   // 1
   asm("brne sync_pulse_line_back_porch      ");   // 2 / 1
   asm("nop \n nop                            ");  // 2
 
   asm("rjmp sync_pulse_line_ret               "); // 2
+
+  // Sync pulse line compute
+  asm("sync_pulse_compute_line:                       ");
+
+  // Fix tile overwritten by ball (31)
+  asm("mov r23, r15");   //           1
+  asm("mov r24, r18");  //            1
+  asm("mov r25, ZH");  //             1
+  asm("lsr r25"); // Divide 2       1
+  asm("lsr r25"); // Divide 4       1
+  asm("lsr r25"); // Divide 8      1
+  asm("lsr r25"); // Divide 16      1
+  asm("rcall write_descriptor"); // 24
+
+  // Write ball tile data (40)
+  asm("ldi r24, 0"); // 1
+  asm("sts 0x560, r24"); // 2
+  asm("sts 0x561, r24");
+  asm("sts 0x562, r24");
+  asm("sts 0x563, r24");
+  asm("sts 0x564, r24");
+  asm("sts 0x565, r24");
+  asm("sts 0x566, r24");
+  asm("sts 0x567, r24");
+  asm("sts 0x568, r24");
+  asm("sts 0x569, r24");
+  asm("sts 0x56a, r24");
+  asm("sts 0x56b, r24");
+  asm("sts 0x56c, r24");
+  asm("sts 0x56d, r24");
+  asm("sts 0x56e, r24");
+  asm("sts 0x56f, r24");
+  
+  asm("ldi XL, lo8(0x560)"); // 1
+  asm("ldi XH, hi8(0x560)"); // 1
+
+  asm("mov r23, ZH");
+  asm("andi r23, 0b00001111");
+  asm("add XL, r23"); //1 
+  asm("adc XH, r24"); // 1
+
+  asm("ldi r24, 0b00000111"); // 1
+  asm("st X, r24"); // 2
+
+  // Write ball descriptor (18)
+  asm("ldi r23, lo8(0x110)"); // 1
+  asm("ldi r24, hi8(0x110)"); // 1
+  asm("mov XL, r18"); // 1
+  asm("ldi XH, 0x00"); // 1
+  asm("lsl XL                         "); // 1    Multiply by 2
+  asm("rol XH                         "); // 1
+  asm("lsl XL                         "); // 1    Multiply by 2 (now 4x)
+  asm("rol XH                         "); // 1
+  asm("lsl XL                         "); // 1    Multiply by 2 (now 8x)
+  asm("rol XH                         "); // 1
+
+  asm("add XL, r23"); // 1
+  asm("adc XH, r24"); // 1
+  
+  asm("add XL, r25"); // 1
+  asm("ldi r23, 0x00"); // 1
+  asm("adc XH, r23"); // 1
+
+  asm("ld r25, X"); // 2
+  asm("mov r15, r25"); // 1
+  asm("ldi r25, 29");
+  asm("st X, r25");
+  
+  // Front porch and visible area (329)
+  asm("ldi r25, 107                         "); // 1
+  asm("sync_pulse_compute_line_front_porch:         "); // 3 / 1
+  asm("dec r25                            ");   // 1
+  asm("brne sync_pulse_compute_line_front_porch   ");   // 2 / 1
+  asm("ldi r25, 0b00000000                  "); // 1
+  asm("nop");
+
+  // Sync pulse (61)
+  asm("out 0x05, r25                          "); // 1
+  asm("ldi r25, 19                            "); // 1
+  asm("sync_pulse_compute_line_sync_pulse:            "); // 3 / 1
+  asm("dec r25                             ");    // 1
+  asm("brne sync_pulse_compute_line_sync_pulse     ");    // 2 / 1
+  asm("ldi r25, 0b00001000                    "); // 1
+
+  // Back porch (30.5064548163 cycles) (23)
+  asm("out 0x05, r25                          "); // 1
+  asm("ldi r25, 7                             "); // 1
+  asm("sync_pulse_line_compute_back_porch:            "); // 4 / 1
+  asm("dec r25                              ");   // 1
+  asm("brne sync_pulse_line_compute_back_porch      ");   // 2 / 1
+  asm("nop \n nop                            ");  // 2
+
+  asm("rjmp sync_pulse_compute_line_ret               "); // 2
 
   // Back porch line
   asm("back_porch_line:                       ");
