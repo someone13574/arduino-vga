@@ -8,162 +8,285 @@
 // Tile data            0x390 to 0x8f0 (86 tiles)
 
 // Pallet
-// r24 = A = White
-// r23 = B = Black
-// r22 = C = Grey
+// B = 0b11110100 (color) = 0b00000101 (grey) = blue
+// W = 0b11111111 (color) = 0b00000111 (grey) = white
+// G = 0b10110111 (color) = 0b00000110 (grey) = ground
+// M = 0b01111101 (color) = 0b00000101 (grey) = Medium Green
+// H = 0b10111110 (color) = 0b00000110 (grey) = Bright Green
+// L = 0b01110100 (color) = 0b00000011 (grey) = Dark Green
+// Y = yellow
+// O = orange
 
 // Tile map
-// 0 = BBBB BBBB BBBB BBBB
-// 1 = BBBB AAAA BBBB BBBB
-// 2 = BBBA BBBB ABBB BBBB
-// 3 = BBAB BBBB BABB BBBB
-// 4 = BBBB AAAB BBBB BBBB
-// 5 = BBBA AAAB BBBB BBBB
-// 6 = BBBB BAAB BBBB BBBB
-// 7 = BBAA AAAA AABB BBBB
-// 8 = BBBA AAAA ABBB BBBB
-// 9 = BBBB BBBB BABB BBBB
-// 10 = BBBB BBBA ABBB BBBB
-// 11 = BBBA ABBB BBBB BBBB
-// 12 = BBBB BBAA ABBB BBBB
-// 13 = BBBB BABB ABBB BBBB
-// 14 = BBBB ABBB ABBB BBBB
-// 15 = BBBB BBBB ABBB BBBB
-// 16 = BBAB BBBB BBBB BBBB
-// 17 = BBAA AAAA ABBB BBBB
-// 18 = BBBB BBBA BBBB BBBB
-// 19 = BBBB BBAB BBBB BBBB
-// 20 = BBBA AAAA AABB BBBB
-// 21 = BBBB GBBB BBBB BBBB
-// 22 = BBBB GBBB BBBB BAAB
-// 23 = BBBB GGGG GGGG GGGG
-// 24 = GGGG GGGG GGGG GGGG
-// 25 = BBBB BBBB BBBB BGGB
-// 26 = GGGG GGGG BBBB BBBB
-// 27 = BBBB BBBB BBBB BBAA
-// 28 = BBBB BBBG BBBB BBBB
+// BBBB BBBB BBBB BBBB = 0
+// BBBB BBBB BBBW WWBB = 1
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBBB WBBB = 3
+// BBBB BBBB BBBW WBBB = 4
+// BBBB BBBB BBWW WWWB = 5
+// BBBB BBBB BBBB BWBB = 6
+// BBBB BBBB BBBW BBBB = 7
+// BBBB BBBB BBBB WWBB = 8
+// BBBB BBBB BBBB BBWB = 9
+// BBBB BBBB BBWB BWBB = 10
+// BBWW WBBB BBBB BBBB = 11
+// BWBB BWBB BBBB BBBB = 12
+// BBBW BBBB BBBB BBBB = 13
+// BBWW BBBB BBBB BBBB = 14
+// BWWW WWBB BBBB BBBB = 15
+// BBBB WBBB BBBB BBBB = 16
+// BBWB BBBB BBBB BBBB = 17
+// BBBW WBBB BBBB BBBB = 18
+// BBBB BWBB BBBB BBBB = 19
+// BWBB WBBB BBBB BBBB = 20
+// BWBB BBBB BBBB BBBB = 21
+// BWWW WBBB BBBB BBBB = 22
+// BBWW WWBB BBBB BBBB = 23
+// WBBB BWBB BBBB BBBB = 24
+// BBBB BBYY YWBB BBBB = 25
+// BBBB WWWY YWWB BBBB = 26
+// BBBB WWWW YYOO BBBB = 27
+// BBBB BWWY YYYB BBBB = 28
+// BBBB BBBY YYBB BBBB = 29
+// BBBB BWWW YWWB BBBB = 30
+// BBBB BBWY YYOO BBBB = 31
+// BBBB BWWB BBBB BBBB = 32
+// BBBB BWWW YYBB BBBB = 33
+// BBBB BWWW YYWB BBBB = 34
+// BBBB BBWW YWWB BBBB = 35
+// BBBB BBYY YYWB BBBB = 36
+// BBBB BBYY YOOB BBBB = 37
+// BBBB BBBB BBOB BBBB = 38
+// BBBB BBBB WBBB BBBB = 39
+// BBBB BBBW WBBB BBBB = 40
+// BBBB BBWW WYBB BBBB = 41
+// BBBB BBWW YYBB BBBB = 42
+// BBBB BYYW YYYB BBBB = 43
+// BBBB BBYY YWWB BBBB = 44
+// BBBB BBYY OWBB BBBB = 45
+// BBBB BBBY OBBB BBBB = 46
+// BBBB BBYW WOOB BBBB = 47
+// BBBB BYYY YYYB BBBB = 48
+// BBBB BYWW YYYB BBBB = 49
+// BBBB BWWW YYYB BBBB = 50
+// BBBB WWWW BYBB BBBB = 51
+// BBBB BBBB BBBB BBMH = 52
+// BBBB BBBB BBBB MHMM = 53
+// BBBB BBBB BBMH MMMM = 54
+// BBBB BBBB MHMM MMLL = 55
+// BBBB BBMH MMMM LLBB = 56
+// BBBB MHMM MMLL BBBB = 57
+// BBMH MMMM LLBB BBBB = 58
+// MHMM MMLL BBBB BBBB = 59
+// MMMM LLBB BBBB BBBB = 60
+// MMLL BBBB BBBB BBBB = 61
+// LLBB BBBB BBBB BBBB = 62
+// BBBB BBBB BBBB BBBM = 63
+// BBBB BBBB BBBB BMHM = 64
+// BBBB BBBB BBBM HMML = 65
+// BBBB BBBB BMHM MLLB = 66
+// BBBB BBBM HMML LBBB = 67
+// BBBB BMHM MLLB BBBB = 68
+// BBBM HMML LBBB BBBB = 69
+// BMHM MLLB BBBB BBBB = 70
+// HMML LBBB BBBB BBBB = 71
+// MLLB BBBB BBBB BBBB = 72
+// LBBB BBBB BBBB BBBB = 73
+// GGGG GGGG GGGG GGGG = 74
 
-// Number 0
-// BBBB AAAA BBBB BBBB = 1
-// BBBA BBBB ABBB BBBB = 2
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA BBBB ABBB BBBB = 2
-// BBBB AAAA BBBB BBBB = 1
+// Sky
+// BBBB BBBB BBBB BBBB = 0
 
-// Number 1
-// BBBB AAAB BBBB BBBB = 4
-// BBBA AAAB BBBB BBBB = 5
-// BBBB BAAB BBBB BBBB = 6
-// BBBB BAAB BBBB BBBB = 6
-// BBBB BAAB BBBB BBBB = 6
-// BBBB BAAB BBBB BBBB = 6
-// BBBB BAAB BBBB BBBB = 6
-// BBAA AAAA AABB BBBB = 7
+// Ground
+// GGGG GGGG GGGG GGGG = 74
 
-// Number 2
-// BBBA AAAA ABBB BBBB = 8
-// BBAB BBBB BABB BBBB = 3
-// BBBB BBBB BABB BBBB = 9
-// BBBB BBBA ABBB BBBB = 10
-// BBBB BAAB BBBB BBBB = 6
-// BBBA ABBB BBBB BBBB = 11
-// BBAB BBBB BABB BBBB = 3
-// BBAA AAAA AABB BBBB = 7
+// Left 0
+// BBBB BBBB BBBW WWBB = 1
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBBW WWBB = 1
 
-// Number 3
-// BBBA AAAA ABBB BBBB = 8
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBB BBBA ABBB BBBB = 10
-// BBBB BBBB BABB BBBB = 9
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA AAAA ABBB BBBB = 8
+// Left 1
+// BBBB BBBB BBBB WBBB = 3
+// BBBB BBBB BBBW WBBB = 4
+// BBBB BBBB BBBB WBBB = 3
+// BBBB BBBB BBBB WBBB = 3
+// BBBB BBBB BBBB WBBB = 3
+// BBBB BBBB BBWW WWWB = 5
 
-// Number 4
-// BBBB BBAA ABBB BBBB = 12
-// BBBB BABB ABBB BBBB = 13
-// BBBB ABBB ABBB BBBB = 14
-// BBBA BBBB ABBB BBBB = 2
-// BBAA AAAA AABB BBBB = 7
-// BBBB BBBB ABBB BBBB = 15
-// BBBB BBBB ABBB BBBB = 15
+// Left 2
+// BBBB BBBB BBBW WWBB = 1
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBBB BWBB = 6
+// BBBB BBBB BBBB WBBB = 3
+// BBBB BBBB BBBW BBBB = 7
+// BBBB BBBB BBWW WWWB = 5
 
-// Number 5
-// BBAA AAAA AABB BBBB = 7
-// BBAB BBBB BBBB BBBB = 16
-// BBAB BBBB BBBB BBBB = 16
-// BBAA AAAA AABB BBBB = 7
-// BBBB BBBB BABB BBBB = 9
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA AAAA ABBB BBBB = 8
+// Left 3
+// BBBB BBBB BBBW WWBB = 1
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBBB WWBB = 8
+// BBBB BBBB BBBB BBWB = 9
+// BBBB BBBB BBWB BBWB = 2
+// BBBB BBBB BBBW WWBB = 1
 
-// Number 6
-// BBBA AAAA ABBB BBBB = 8
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BBBB BBBB = 16
-// BBAA AAAA ABBB BBBB = 17
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA AAAA ABBB BBBB = 8
+// Left 4
+// BBBB BBBB BBWB BWBB = 10
+// BBBB BBBB BBWB BWBB = 10
+// BBBB BBBB BBWB BWBB = 10
+// BBBB BBBB BBWW WWWB = 5
+// BBBB BBBB BBBB BWBB = 6
+// BBBB BBBB BBBB BWBB = 6
 
-// Number 7
-// BBAA AAAA AABB BBBB = 7
-// BBAB BBBB BABB BBBB = 3
-// BBBB BBBB ABBB BBBB = 15
-// BBBB BBBB ABBB BBBB = 15
-// BBBB BBBA BBBB BBBB = 18
-// BBBB BBBA BBBB BBBB = 18
-// BBBB BBAB BBBB BBBB = 19
+// Right 0
+// BBWW WBBB BBBB BBBB = 11
+// BWBB BWBB BBBB BBBB = 12
+// BWBB BWBB BBBB BBBB = 12
+// BWBB BWBB BBBB BBBB = 12
+// BWBB BWBB BBBB BBBB = 12
+// BBWW WBBB BBBB BBBB = 11
 
-// Number 8
-// BBBA AAAA ABBB BBBB = 8
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA AAAA ABBB BBBB = 8
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA AAAA ABBB BBBB = 8
+// Right 1
+// BBBW BBBB BBBB BBBB = 13
+// BBWW BBBB BBBB BBBB = 14
+// BBBW BBBB BBBB BBBB = 13
+// BBBW BBBB BBBB BBBB = 13
+// BBBW BBBB BBBB BBBB = 13
+// BWWW WWBB BBBB BBBB = 15
 
-// Number 9
-// BBBA AAAA ABBB BBBB = 8
-// BBAB BBBB BABB BBBB = 3
-// BBAB BBBB BABB BBBB = 3
-// BBBA AAAA AABB BBBB = 20
-// BBBB BBBB BABB BBBB = 9
-// BBBB BBBB BABB BBBB = 9
-// BBBB BBBB BABB BBBB = 9
-// BBBB BBBB BABB BBBB = 9
+// Right 2
+// BBWW WBBB BBBB BBBB = 11
+// BWBB BWBB BBBB BBBB = 12
+// BBBB WBBB BBBB BBBB = 16
+// BBBW BBBB BBBB BBBB = 13
+// BBWB BBBB BBBB BBBB = 17
+// BWWW WWBB BBBB BBBB = 15
 
-// Left wall no paddle
-// BBBB GBBB BBBB BBBB = 21
+// Right 3
+// BBWW WBBB BBBB BBBB = 11
+// BWBB BWBB BBBB BBBB = 12
+// BBBW WBBB BBBB BBBB = 18
+// BBBB BWBB BBBB BBBB = 19
+// BWBB BWBB BBBB BBBB = 12
+// BBWW WBBB BBBB BBBB = 11
 
-// Left wall with paddle
-// BBBB GBBB BBBB BAAB = 22
+// Right 4
+// BWBB WBBB BBBB BBBB = 20
+// BWBB WBBB BBBB BBBB = 20
+// BWBB WBBB BBBB BBBB = 20
+// BWWW WWBB BBBB BBBB = 15
+// BBBB WBBB BBBB BBBB = 16
+// BBBB WBBB BBBB BBBB = 16
 
-// Top/bottom wall left start
-// BBBB GGGG GGGG GGGG = 23
+// Right 5
+// BWWW WWBB BBBB BBBB = 15
+// BWBB BBBB BBBB BBBB = 21
+// BWWW WBBB BBBB BBBB = 22
+// BBBB BWBB BBBB BBBB = 19
+// BWBB BWBB BBBB BBBB = 12
+// BBWW WBBB BBBB BBBB = 11
 
-// Top/bottom wall
-// GGGG GGGG GGGG GGGG = 24
+// Right 6
+// BBWW WWBB BBBB BBBB = 23
+// BWBB BBBB BBBB BBBB = 21
+// BWWW WBBB BBBB BBBB = 22
+// BWBB BWBB BBBB BBBB = 12
+// BWBB BWBB BBBB BBBB = 12
+// BBWW WBBB BBBB BBBB = 11
 
-// Middle divider dot
-// BBBB BBBB BBBB BGGB = 25
+// Right 7
+// BWWW WWBB BBBB BBBB = 15
+// BBBB BWBB BBBB BBBB = 19
+// BBBB WBBB BBBB BBBB = 16
+// BBBB WBBB BBBB BBBB = 16
+// BBBW BBBB BBBB BBBB = 13
+// BBBW BBBB BBBB BBBB = 13
 
-// Top/bottom wall right end
-// GGGG GGGG BBBB BBBB = 26
+// Right 8
+// BBWW WBBB BBBB BBBB = 11
+// WBBB BWBB BBBB BBBB = 24
+// BBWW WBBB BBBB BBBB = 11
+// WBBB BWBB BBBB BBBB = 24
+// WBBB BWBB BBBB BBBB = 24
+// BBWW WBBB BBBB BBBB = 11
 
-// Right paddle
-// BBBB BBBB BBBB BBAA = 27
+// Right 9
+// BBWW WBBB BBBB BBBB = 11
+// BWBB BWBB BBBB BBBB = 12
+// BWBB BWBB BBBB BBBB = 12
+// BBWW WWBB BBBB BBBB = 23
+// BBBB BWBB BBBB BBBB = 19
+// BBBB BWBB BBBB BBBB = 19
 
-// Right wall
-// BBBB BBBG BBBB BBBB = 28
+// Bird 0 (level)
+// BBBB BBYY YWBB BBBB = 25
+// BBBB WWWY YWWB BBBB = 26
+// BBBB WWWW YYOO BBBB = 27
+// BBBB BWWY YYYB BBBB = 28
+// BBBB BBBY YYBB BBBB = 29
+
+// Bird 1 (down 1)
+// BBBB BWWY YYYB BBBB = 28
+// BBBB WWWY YWWB BBBB = 26
+// BBBB BWWW YWWB BBBB = 30
+// BBBB BBWY YYOO BBBB = 31
+// BBBB BBBY YYBB BBBB = 29
+
+// Bird 2 (down 2)
+// BBBB BWWB BBBB BBBB = 32
+// BBBB BWWW YYBB BBBB = 33
+// BBBB BWWW YYWB BBBB = 34
+// BBBB BBWW YWWB BBBB = 35
+// BBBB BBYY YYWB BBBB = 36
+// BBBB BBYY YOOB BBBB = 37
+// BBBB BBBB BBOB BBBB = 38
+
+// Bird 3 (down 3)
+// BBBB BBBB WBBB BBBB = 39
+// BBBB BBBW WBBB BBBB = 40
+// BBBB BBWW WYBB BBBB = 41
+// BBBB BBWW YYBB BBBB = 42
+// BBBB BYYW YYYB BBBB = 43
+// BBBB BBYY YWWB BBBB = 44
+// BBBB BBYY OWBB BBBB = 45
+// BBBB BBBY OBBB BBBB = 46
+
+// Bird 4 (up 1)
+// BBBB BBBB BBOB BBBB = 38
+// BBBB BBYW WOOB BBBB = 47
+// BBBB BYYY YYYB BBBB = 48
+// BBBB BYWW YYYB BBBB = 49
+// BBBB BWWW YYYB BBBB = 50
+// BBBB WWWW BYBB BBBB = 51
+// BBBB BWBB BBBB BBBB = 19
+
+// Pipe tops
+// BBBB BBBB BBBB BBMH = 52
+// BBBB BBBB BBBB MHMM = 53
+// BBBB BBBB BBMH MMMM = 54
+// BBBB BBBB MHMM MMLL = 55
+// BBBB BBMH MMMM LLBB = 56
+// BBBB MHMM MMLL BBBB = 57
+// BBMH MMMM LLBB BBBB = 58
+// MHMM MMLL BBBB BBBB = 59
+// MMMM LLBB BBBB BBBB = 60
+// MMLL BBBB BBBB BBBB = 61
+// LLBB BBBB BBBB BBBB = 62
+
+// Pipes
+// BBBB BBBB BBBB BBBM = 63
+// BBBB BBBB BBBB BMHM = 64
+// BBBB BBBB BBBM HMML = 65
+// BBBB BBBB BMHM MLLB = 66
+// BBBB BBBM HMML LBBB = 67
+// BBBB BMHM MLLB BBBB = 68
+// BBBM HMML LBBB BBBB = 69
+// BMHM MLLB BBBB BBBB = 70
+// HMML LBBB BBBB BBBB = 71
+// MLLB BBBB BBBB BBBB = 72
+// LBBB BBBB BBBB BBBB = 73
 
 void setup()
 {
@@ -179,149 +302,8 @@ void loop()
   asm("ldi r25, 0b11111111              ");
   asm("out 0x0a, r25                    ");
 
-  // Set inital ball position and speed
-  asm("ldi r17, 0"); // Ball y-sub-pixel
-  asm("ldi r18, 39"); // Ball y-pixel
-
-  asm("ldi ZL, 0"); // Ball x-sub-pixel
-  asm("ldi ZH, 50"); // Ball x-pixel
-
-  asm("ldi 19, 0b00010001"); // xxxxyyyy ball velocity (1 = pos + 1/16)
-
   // Load tile data
   asm("rcall load_tiles                ");
-
-  // Load descriptors
-
-  // Clear descriptors
-  asm("ldi r25, 0");
-  asm("ldi XL, lo8(0x110)");
-  asm("ldi XH, hi8(0x110)");
-  asm("ldi YL, lo8(640)");
-  asm("ldi YH, hi8(640)");
-  asm("clear_descriptors_loop:");
-    asm("st X+, r25");
-    asm("sbiw Y, 1");
-    asm("brne clear_descriptors_loop");
-  
-  // Load scores
-  asm("ldi r25, 3");
-  asm("ldi r24, 4");
-  asm("ldi r23, 1");
-  asm("rcall write_descriptor"); // Line 1, left
-  asm("ldi r24, 5");
-  asm("ldi r23, 2");
-  asm("rcall write_descriptor"); // Line 2, left
-  asm("ldi r24, 6");
-  asm("ldi r23, 3");
-  asm("rcall write_descriptor"); // Line 3, left
-  asm("ldi r24, 7");
-  asm("rcall write_descriptor"); // Line 4, left
-  asm("ldi r24, 8");
-  asm("rcall write_descriptor"); // Line 5, left
-  asm("ldi r24, 9");
-  asm("rcall write_descriptor"); // Line 6, left
-  asm("ldi r24, 10");
-  asm("ldi r23, 2");
-  asm("rcall write_descriptor"); // Line 7, left
-  asm("ldi r24, 11");
-  asm("ldi r23, 1");
-  asm("rcall write_descriptor"); // Line 8, left
-
-  asm("ldi r25, 4");
-  asm("ldi r24, 4");
-  asm("ldi r23, 1");
-  asm("rcall write_descriptor"); // Line 1, right
-  asm("ldi r24, 5");
-  asm("ldi r23, 2");
-  asm("rcall write_descriptor"); // Line 2, right
-  asm("ldi r24, 6");
-  asm("ldi r23, 3");
-  asm("rcall write_descriptor"); // Line 3, right
-  asm("ldi r24, 7");
-  asm("rcall write_descriptor"); // Line 4, right
-  asm("ldi r24, 8");
-  asm("rcall write_descriptor"); // Line 5, right
-  asm("ldi r24, 9");
-  asm("rcall write_descriptor"); // Line 6, right
-  asm("ldi r24, 10");
-  asm("ldi r23, 2");
-  asm("rcall write_descriptor"); // Line 7, right
-  asm("ldi r24, 11");
-  asm("ldi r23, 1");
-  asm("rcall write_descriptor"); // Line 8, right
-
-  // Load top wall
-  asm("ldi r25, 0");
-  asm("ldi r24, 13");
-  asm("ldi r23, 23");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 1");
-  asm("ldi r23, 24");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 2");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 3");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 4");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 5");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 6");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 7");
-  asm("ldi r23, 26");
-  asm("rcall write_descriptor");
-
-  // Load bottom wall
-  asm("ldi r25, 0");
-  asm("ldi r24, 75");
-  asm("ldi r23, 23");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 1");
-  asm("ldi r23, 24");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 2");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 3");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 4");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 5");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 6");
-  asm("rcall write_descriptor");
-  asm("ldi r25, 7");
-  asm("ldi r23, 26");
-  asm("rcall write_descriptor");
-
-  asm("ldi r25, 3");
-  asm("ldi r24, 15");
-  asm("ldi r23, 25");
-  asm("middle_line_descriptor_write:");
-    asm("rcall write_descriptor");
-    asm("inc r24");
-    asm("inc r24");
-    asm("cpi r24, 75");
-    asm("brbs 0, middle_line_descriptor_write");
-
-  asm("ldi r25, 0");
-  asm("ldi r24, 14");
-  asm("ldi r23, 21");
-  asm("left_wall_descriptor_write:");
-    asm("rcall write_descriptor");
-    asm("inc r24");
-    asm("cpi r24, 75");
-    asm("brbs 0, left_wall_descriptor_write");
-
-  asm("ldi r25, 7");
-  asm("ldi r24, 14");
-  asm("ldi r23, 28");
-  asm("right_wall_descriptor_write:");
-    asm("rcall write_descriptor");
-    asm("inc r24");
-    asm("cpi r24, 75");
-    asm("brbs 0, right_wall_descriptor_write");
 
   // Start loop
   asm("start_of_frame:                  ");
@@ -336,9 +318,9 @@ void loop()
   asm("rjmp load_line               "); // 2+501+2+3=508
   asm("load_line_ret:           nop    ");
   asm("rcall visible_line          \n nop "); // 3+4+501=508
-  asm("rcall visible_line           "); // 3+4+501=508
+  asm("rcall visible_line           ");       // 3+4+501=508
   asm("rcall visible_line          \n nop "); // 3+4+501=508
-  asm("rcall visible_line           "); // 3+4+501=508
+  asm("rcall visible_line           ");       // 3+4+501=508
   asm("rcall visible_line          \n nop "); // 3+4+501=508
 
   asm("dec r16                      ");
@@ -950,93 +932,28 @@ void loop()
   // Sync pulse line compute
   asm("sync_pulse_compute_line:                       ");
 
-  // Fix tile overwritten by ball (31)
-  asm("mov r23, r15");   //           1
-  asm("mov r24, r18");  //            1
-  asm("mov r25, ZH");  //             1
-  asm("lsr r25"); // Divide 2       1
-  asm("lsr r25"); // Divide 4       1
-  asm("lsr r25"); // Divide 8      1
-  asm("lsr r25"); // Divide 16      1
-  asm("rcall write_descriptor"); // 24
-
-  // Write ball tile data (40)
-  asm("ldi r24, 0"); // 1
-  asm("sts 0x560, r24"); // 2
-  asm("sts 0x561, r24");
-  asm("sts 0x562, r24");
-  asm("sts 0x563, r24");
-  asm("sts 0x564, r24");
-  asm("sts 0x565, r24");
-  asm("sts 0x566, r24");
-  asm("sts 0x567, r24");
-  asm("sts 0x568, r24");
-  asm("sts 0x569, r24");
-  asm("sts 0x56a, r24");
-  asm("sts 0x56b, r24");
-  asm("sts 0x56c, r24");
-  asm("sts 0x56d, r24");
-  asm("sts 0x56e, r24");
-  asm("sts 0x56f, r24");
-  
-  asm("ldi XL, lo8(0x560)"); // 1
-  asm("ldi XH, hi8(0x560)"); // 1
-
-  asm("mov r23, ZH");
-  asm("andi r23, 0b00001111");
-  asm("add XL, r23"); //1 
-  asm("adc XH, r24"); // 1
-
-  asm("ldi r24, 0b00000111"); // 1
-  asm("st X, r24"); // 2
-
-  // Write ball descriptor (18)
-  asm("ldi r23, lo8(0x110)"); // 1
-  asm("ldi r24, hi8(0x110)"); // 1
-  asm("mov XL, r18"); // 1
-  asm("ldi XH, 0x00"); // 1
-  asm("lsl XL                         "); // 1    Multiply by 2
-  asm("rol XH                         "); // 1
-  asm("lsl XL                         "); // 1    Multiply by 2 (now 4x)
-  asm("rol XH                         "); // 1
-  asm("lsl XL                         "); // 1    Multiply by 2 (now 8x)
-  asm("rol XH                         "); // 1
-
-  asm("add XL, r23"); // 1
-  asm("adc XH, r24"); // 1
-  
-  asm("add XL, r25"); // 1
-  asm("ldi r23, 0x00"); // 1
-  asm("adc XH, r23"); // 1
-
-  asm("ld r25, X"); // 2
-  asm("mov r15, r25"); // 1
-  asm("ldi r25, 29");
-  asm("st X, r25");
-  
   // Front porch and visible area (329)
-  asm("ldi r25, 107                         "); // 1
+  asm("ldi r25, 138                         ");         // 1
   asm("sync_pulse_compute_line_front_porch:         "); // 3 / 1
-  asm("dec r25                            ");   // 1
+  asm("dec r25                            ");           // 1
   asm("brne sync_pulse_compute_line_front_porch   ");   // 2 / 1
-  asm("ldi r25, 0b00000000                  "); // 1
-  asm("nop");
+  asm("ldi r25, 0b00000000                  ");         // 1
 
   // Sync pulse (61)
-  asm("out 0x05, r25                          "); // 1
-  asm("ldi r25, 19                            "); // 1
+  asm("out 0x05, r25                          ");         // 1
+  asm("ldi r25, 19                            ");         // 1
   asm("sync_pulse_compute_line_sync_pulse:            "); // 3 / 1
-  asm("dec r25                             ");    // 1
+  asm("dec r25                             ");            // 1
   asm("brne sync_pulse_compute_line_sync_pulse     ");    // 2 / 1
-  asm("ldi r25, 0b00001000                    "); // 1
+  asm("ldi r25, 0b00001000                    ");         // 1
 
   // Back porch (30.5064548163 cycles) (23)
-  asm("out 0x05, r25                          "); // 1
-  asm("ldi r25, 7                             "); // 1
+  asm("out 0x05, r25                          ");         // 1
+  asm("ldi r25, 7                             ");         // 1
   asm("sync_pulse_line_compute_back_porch:            "); // 4 / 1
-  asm("dec r25                              ");   // 1
+  asm("dec r25                              ");           // 1
   asm("brne sync_pulse_line_compute_back_porch      ");   // 2 / 1
-  asm("nop \n nop                            ");  // 2
+  asm("nop \n nop                            ");          // 2
 
   asm("rjmp sync_pulse_compute_line_ret               "); // 2
 
@@ -1117,590 +1034,1524 @@ void loop()
 
   // Load tiles
   asm("load_tiles:");
-  // Set color pallet
-  asm("ldi r24, 0b00000111            "); // White
-  asm("ldi r23, 0b00000000            "); // Black
-  asm("ldi r22, 0b00000100            "); // 50% grey
+  // Set color pallet (cannot use r25, r22, r21, r20)
+  asm("ldi r24, 0b00000101"); // B
+  asm("ldi r23, 0b00000111"); // W
 
   // Tile 0 - BBBB BBBB BBBB BBBB
   asm("ldi r25, 0                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1     1 1
+  asm("st X+, r24                     "); // 2     1 2
+  asm("st X+, r24                     "); // 3     1 3
+  asm("st X+, r24                     "); // 4     1 4
+  asm("st X+, r24                     "); // 5     2 1
+  asm("st X+, r24                     "); // 6     2 2
+  asm("st X+, r24                     "); // 7     2 3
+  asm("st X+, r24                     "); // 8     2 4
+  asm("st X+, r24                     "); // 9     3 1
+  asm("st X+, r24                     "); // 10    3 2
+  asm("st X+, r24                     "); // 11    3 3
+  asm("st X+, r24                     "); // 12    3 4
+  asm("st X+, r24                     "); // 13    4 1
+  asm("st X+, r24                     "); // 14    4 2
+  asm("st X+, r24                     "); // 15    4 3
+  asm("st X+, r24                     "); // 16    4 4
 
-  // Tile 1 - BBBB AAAA BBBB BBBB
+  // Tile 1 - BBBB BBBB BBBW WWBB = 1
   asm("ldi r25, 1                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 2 - BBBA BBBB ABBB BBBB
+  // Tile 2 - BBBB BBBB BBWB BBWB = 2
   asm("ldi r25, 2                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 3 - BBAB BBBB BABB BBBB
+  // Tile 3 - BBBB BBBB BBBB WBBB = 3
   asm("ldi r25, 3                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r24                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r24                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 4 - BBBB AAAB BBBB BBBB
+  // Tile 4 - BBBB BBBB BBBW WBBB = 4
   asm("ldi r25, 4                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 5 - BBBA AAAB BBBB BBBB
+  // Tile 5 - BBBB BBBB BBWW WWWB = 5
   asm("ldi r25, 5                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 6 - BBBB BAAB BBBB BBBB
+  // Tile 6 - BBBB BBBB BBBB BWBB = 6
   asm("ldi r25, 6                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 7 - BBAA AAAA AABB BBBB
+  // Tile 7 - BBBB BBBB BBBW BBBB = 7
   asm("ldi r25, 7                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r24                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r24                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 8 - BBBA AAAA ABBB BBBB
+  // Tile 8 - BBBB BBBB BBBB WWBB = 8
   asm("ldi r25, 8                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 9 - BBBB BBBB BABB BBBB
+  // Tile 9 - BBBB BBBB BBBB BBWB = 9
   asm("ldi r25, 9                     ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r24                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 10 - BBBB BBBA ABBB BBBB
+  // Tile 10 - BBBB BBBB BBWB BWBB = 10
   asm("ldi r25, 10                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 11 - BBBA ABBB BBBB BBBB
+  // Tile 11 - BBWW WBBB BBBB BBBB = 11
   asm("ldi r25, 11                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 12 - BBBB BBAA ABBB BBBB
+  // Tile 12 - BWBB BWBB BBBB BBBB = 12
   asm("ldi r25, 12                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 13 - BBBB BABB ABBB BBBB
+  // Tile 13 - BBBW BBBB BBBB BBBB = 13
   asm("ldi r25, 13                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 14 - BBBB ABBB ABBB BBBB
+  // Tile 14 - BBWW BBBB BBBB BBBB = 14
   asm("ldi r25, 14                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 15 - BBBB BBBB ABBB BBBB
+  // Tile 15 - BWWW WWBB BBBB BBBB = 15
   asm("ldi r25, 15                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 16 - BBAB BBBB BBBB BBBB
+  // Tile 16 - BBBB WBBB BBBB BBBB = 16
   asm("ldi r25, 16                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r24                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 17 - BBAA AAAA ABBB BBBB
+  // Tile 17 - BBWB BBBB BBBB BBBB = 17
   asm("ldi r25, 17                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r24                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 18 - BBBB BBBA BBBB BBBB
+  // Tile 18 - BBBW WBBB BBBB BBBB = 18
   asm("ldi r25, 18                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 19 - BBBB BBAB BBBB BBBB
+  // Tile 19 - BBBB BWBB BBBB BBBB = 19
   asm("ldi r25, 19                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 20 - BBBA AAAA AABB BBBB
+  // Tile 20 - BWBB WBBB BBBB BBBB = 20
   asm("ldi r25, 20                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r24                     "); // 4
-  asm("st X+, r24                     "); // 5
-  asm("st X+, r24                     "); // 6
-  asm("st X+, r24                     "); // 7
-  asm("st X+, r24                     "); // 8
-  asm("st X+, r24                     "); // 9
-  asm("st X+, r24                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 21 - BBBB GBBB BBBB BBBB
+  // Tile 21 - BWBB BBBB BBBB BBBB = 21
   asm("ldi r25, 21                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r22                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 22 - BBBB GBBB BBBB BAAB
+  // Tile 22 - BWWW WBBB BBBB BBBB = 22
   asm("ldi r25, 22                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r22                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r24                     "); // 14
-  asm("st X+, r24                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 23 - BBBB GGGG GGGG GGGG
+  // Tile 23 - BBWW WWBB BBBB BBBB = 23
   asm("ldi r25, 23                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r22                     "); // 5
-  asm("st X+, r22                     "); // 6
-  asm("st X+, r22                     "); // 7
-  asm("st X+, r22                     "); // 8
-  asm("st X+, r22                     "); // 9
-  asm("st X+, r22                     "); // 10
-  asm("st X+, r22                     "); // 11
-  asm("st X+, r22                     "); // 12
-  asm("st X+, r22                     "); // 13
-  asm("st X+, r22                     "); // 14
-  asm("st X+, r22                     "); // 15
-  asm("st X+, r22                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 24 - GGGG GGGG GGGG GGGG
+  // Tile 24 - WBBB BWBB BBBB BBBB = 24
   asm("ldi r25, 24                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r22                     "); // 1
-  asm("st X+, r22                     "); // 2
-  asm("st X+, r22                     "); // 3
-  asm("st X+, r22                     "); // 4
-  asm("st X+, r22                     "); // 5
-  asm("st X+, r22                     "); // 6
-  asm("st X+, r22                     "); // 7
-  asm("st X+, r22                     "); // 8
-  asm("st X+, r22                     "); // 9
-  asm("st X+, r22                     "); // 10
-  asm("st X+, r22                     "); // 11
-  asm("st X+, r22                     "); // 12
-  asm("st X+, r22                     "); // 13
-  asm("st X+, r22                     "); // 14
-  asm("st X+, r22                     "); // 15
-  asm("st X+, r22                     "); // 16
+  asm("st X+, r23                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 25 - BBBB BBBB BBBB BGGB
+  // Set color pallet (cannot use r25, r22, r21, r20)
+  asm("ldi r24, 0b00000101"); // B
+  asm("ldi r23, 0b00000111"); // W
+  asm("ldi r19, 0b00000111"); // Y
+  asm("ldi r18, 0b00000111"); // O
+
+  // Tile 25 - BBBB BBYY YWBB BBBB = 25
   asm("ldi r25, 25                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r22                     "); // 14
-  asm("st X+, r22                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 26 - GGGG GGGG BBBB BBBB
+  // Tile 26 - BBBB WWWY YWWB BBBB = 26
   asm("ldi r25, 26                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r22                     "); // 1
-  asm("st X+, r22                     "); // 2
-  asm("st X+, r22                     "); // 3
-  asm("st X+, r22                     "); // 4
-  asm("st X+, r22                     "); // 5
-  asm("st X+, r22                     "); // 6
-  asm("st X+, r22                     "); // 7
-  asm("st X+, r22                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 27 - BBBB BBBB BBBB BBAA
+  // Tile 27 - BBBB WWWW YYOO BBBB = 27
   asm("ldi r25, 27                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r23                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r24                     "); // 15
-  asm("st X+, r24                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r18                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
-  // Tile 28 - BBBB BBBG BBBB BBBB
+  // Tile 28 - BBBB BWWY YYYB BBBB = 28
   asm("ldi r25, 28                    ");
   asm("rcall init_tile_load           ");
-  asm("st X+, r23                     "); // 1
-  asm("st X+, r23                     "); // 2
-  asm("st X+, r23                     "); // 3
-  asm("st X+, r23                     "); // 4
-  asm("st X+, r23                     "); // 5
-  asm("st X+, r23                     "); // 6
-  asm("st X+, r23                     "); // 7
-  asm("st X+, r22                     "); // 8
-  asm("st X+, r23                     "); // 9
-  asm("st X+, r23                     "); // 10
-  asm("st X+, r23                     "); // 11
-  asm("st X+, r23                     "); // 12
-  asm("st X+, r23                     "); // 13
-  asm("st X+, r23                     "); // 14
-  asm("st X+, r23                     "); // 15
-  asm("st X+, r23                     "); // 16
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r19                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 29 - BBBB BBBY YYBB BBBB = 29
+  asm("ldi r25, 29                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 30 - BBBB BWWW YWWB BBBB = 30
+  asm("ldi r25, 30                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 31 - BBBB BBWY YYOO BBBB = 31
+  asm("ldi r25, 31                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r18                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 32 - BBBB BWWB BBBB BBBB = 32
+  asm("ldi r25, 32                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 33 - BBBB BWWW YYBB BBBB = 33
+  asm("ldi r25, 33                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 34 - BBBB BWWW YYWB BBBB = 34
+  asm("ldi r25, 34                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 35 - BBBB BBWW YWWB BBBB = 35
+  asm("ldi r25, 35                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 36 - BBBB BBYY YYWB BBBB = 36
+  asm("ldi r25, 36                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 37 - BBBB BBYY YOOB BBBB = 37
+  asm("ldi r25, 37                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r18                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 38 - BBBB BBBB BBOB BBBB = 38
+  asm("ldi r25, 38                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 39 - BBBB BBBB WBBB BBBB = 39
+  asm("ldi r25, 39                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 40 - BBBB BBBW WBBB BBBB = 40
+  asm("ldi r25, 40                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 41 - BBBB BBWW WYBB BBBB = 41
+  asm("ldi r25, 41                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 42 - BBBB BBWW YYBB BBBB = 42
+  asm("ldi r25, 42                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 43 - BBBB BYYW YYYB BBBB = 43
+  asm("ldi r25, 43                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r19                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r19                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 44 - BBBB BBYY YWWB BBBB = 44
+  asm("ldi r25, 44                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 45 - BBBB BBYY OWBB BBBB = 45
+  asm("ldi r25, 45                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r18                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 46 - BBBB BBBY OBBB BBBB = 46
+  asm("ldi r25, 46                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r18                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 47 - BBBB BBYW WOOB BBBB = 47
+  asm("ldi r25, 47                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r18                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 48 - BBBB BYYY YYYB BBBB = 48
+  asm("ldi r25, 48                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r19                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r19                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 49 - BBBB BYWW YYYB BBBB = 49
+  asm("ldi r25, 49                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r19                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r19                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 50 - BBBB BWWW YYYB BBBB = 50
+  asm("ldi r25, 50                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r19                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 51 - BBBB WWWW BYBB BBBB = 51
+  asm("ldi r25, 51                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Set color pallet (cannot use r25, r22, r21, r20)
+  asm("ldi r24, 0b00000101"); // B
+  asm("ldi r23, 0b00000101"); // M
+  asm("ldi r19, 0b00000110"); // H
+  asm("ldi r18, 0b00000011"); // L
+
+  // Tile 52 - BBBB BBBB BBBB BBMH = 52
+  asm("ldi r25, 52                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r19                    ");  // 16   4 4
+
+  // Tile 53 - BBBB BBBB BBBB MHMM = 53
+  asm("ldi r25, 53                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r19                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r23                    ");  // 16   4 4
+
+  // Tile 54 - BBBB BBBB BBMH MMMM = 54
+  asm("ldi r25, 54                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r19                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r23                    ");  // 16   4 4
+
+  // Tile 55 - BBBB BBBB MHMM MMLL = 55
+  asm("ldi r25, 55                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r19                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r18                    ");  // 15   4 3
+  asm("st X+, r18                    ");  // 16   4 4
+
+  // Tile 56 - BBBB BBMH MMMM LLBB = 56
+  asm("ldi r25, 56                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r19                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r18                    ");  // 13   4 1
+  asm("st X+, r18                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 57 - BBBB MHMM MMLL BBBB = 57
+  asm("ldi r25, 57                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r19                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r18                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 58 - BBMH MMMM LLBB BBBB = 58
+  asm("ldi r25, 58                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r19                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r18                     "); // 9    3 1
+  asm("st X+, r18                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 59 - MHMM MMLL BBBB BBBB = 59
+  asm("ldi r25, 59                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r23                     "); // 1    1 1
+  asm("st X+, r19                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r18                     "); // 7    2 3
+  asm("st X+, r18                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 60 - MMMM LLBB BBBB BBBB = 60
+  asm("ldi r25, 60                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r23                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r18                     "); // 5    2 1
+  asm("st X+, r18                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 61 - MMLL BBBB BBBB BBBB = 61
+  asm("ldi r25, 61                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r23                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r18                     "); // 3    1 3
+  asm("st X+, r18                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 62 - LLBB BBBB BBBB BBBB = 62
+  asm("ldi r25, 62                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r18                     "); // 1    1 1
+  asm("st X+, r18                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 63 - BBBB BBBB BBBB BBBM = 63
+  asm("ldi r25, 63                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r23                    ");  // 16   4 4
+
+  // Tile 64 - BBBB BBBB BBBB BMHM = 64
+  asm("ldi r25, 64                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r19                    ");  // 15   4 3
+  asm("st X+, r23                    ");  // 16   4 4
+
+  // Tile 65 - BBBB BBBB BBBM HMML = 65
+  asm("ldi r25, 65                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r19                    ");  // 13   4 1
+  asm("st X+, r23                    ");  // 14   4 2
+  asm("st X+, r23                    ");  // 15   4 3
+  asm("st X+, r18                    ");  // 16   4 4
+
+  // Tile 66 - BBBB BBBB BMHM MLLB = 66
+  asm("ldi r25, 66                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r19                    ");  // 11   3 3
+  asm("st X+, r23                    ");  // 12   3 4
+  asm("st X+, r23                    ");  // 13   4 1
+  asm("st X+, r18                    ");  // 14   4 2
+  asm("st X+, r18                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 67 - BBBB BBBM HMML LBBB = 67
+  asm("ldi r25, 67                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r19                     "); // 9    3 1
+  asm("st X+, r23                    ");  // 10   3 2
+  asm("st X+, r23                    ");  // 11   3 3
+  asm("st X+, r18                    ");  // 12   3 4
+  asm("st X+, r18                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 68 - BBBB BMHM MLLB BBBB = 68
+  asm("ldi r25, 68                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r19                     "); // 7    2 3
+  asm("st X+, r23                     "); // 8    2 4
+  asm("st X+, r23                     "); // 9    3 1
+  asm("st X+, r18                    ");  // 10   3 2
+  asm("st X+, r18                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 69 - BBBM HMML LBBB BBBB = 69
+  asm("ldi r25, 69                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r19                     "); // 5    2 1
+  asm("st X+, r23                     "); // 6    2 2
+  asm("st X+, r23                     "); // 7    2 3
+  asm("st X+, r18                     "); // 8    2 4
+  asm("st X+, r18                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 70 - BMHM MLLB BBBB BBBB = 70
+  asm("ldi r25, 70                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r24                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r19                     "); // 3    1 3
+  asm("st X+, r23                     "); // 4    1 4
+  asm("st X+, r23                     "); // 5    2 1
+  asm("st X+, r18                     "); // 6    2 2
+  asm("st X+, r18                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 71 - HMML LBBB BBBB BBBB = 71
+  asm("ldi r25, 71                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r19                     "); // 1    1 1
+  asm("st X+, r23                     "); // 2    1 2
+  asm("st X+, r23                     "); // 3    1 3
+  asm("st X+, r18                     "); // 4    1 4
+  asm("st X+, r18                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 72 - MLLB BBBB BBBB BBBB = 72
+  asm("ldi r25, 72                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r23                     "); // 1    1 1
+  asm("st X+, r18                     "); // 2    1 2
+  asm("st X+, r18                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Tile 73 - LBBB BBBB BBBB BBBB = 73
+  asm("ldi r25, 73                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r18                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
+
+  // Set color pallet (cannot use r25, r22, r21, r20)
+  asm("ldi r24, 0b00000110"); // G
+
+  // Tile 73 - GGGG GGGG GGGG GGGG = 74
+  asm("ldi r25, 74                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r14                     "); // 1    1 1
+  asm("st X+, r24                     "); // 2    1 2
+  asm("st X+, r24                     "); // 3    1 3
+  asm("st X+, r24                     "); // 4    1 4
+  asm("st X+, r24                     "); // 5    2 1
+  asm("st X+, r24                     "); // 6    2 2
+  asm("st X+, r24                     "); // 7    2 3
+  asm("st X+, r24                     "); // 8    2 4
+  asm("st X+, r24                     "); // 9    3 1
+  asm("st X+, r24                    ");  // 10   3 2
+  asm("st X+, r24                    ");  // 11   3 3
+  asm("st X+, r24                    ");  // 12   3 4
+  asm("st X+, r24                    ");  // 13   4 1
+  asm("st X+, r24                    ");  // 14   4 2
+  asm("st X+, r24                    ");  // 15   4 3
+  asm("st X+, r24                    ");  // 16   4 4
 
   asm("ret");
 }
