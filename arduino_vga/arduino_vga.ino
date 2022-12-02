@@ -179,6 +179,13 @@ void loop()
   asm("ldi r25, 0b11111111              ");
   asm("out 0x0a, r25                    ");
 
+  // Init adc
+  asm("ldi r25, 0b01100000"); // Select port 0, Set reference voltage to use vcc (5v), Reduce resolution to 8-bit for easy reading from ADCH
+  asm("sts 0x7c, r25"); // Write to ADMUX
+
+  asm("ldi r25, 0b11000111"); // Start conversion, enable adc and set rescaler to x128
+  asm("sts 0x7a, r25"); // Write to ADCSRA
+
   // Set inital ball position and speed
   asm("ldi r17, 0"); // Ball y-sub-pixel
   asm("ldi r18, 39"); // Ball y-pixel
@@ -187,6 +194,9 @@ void loop()
   asm("ldi ZH, 50"); // Ball x-pixel
 
   asm("ldi 19, 0b00010001"); // xxxxyyyy ball velocity (1 = pos + 1/16)
+
+  asm("ldi r25, 20");
+  asm("mov r15, r25");
 
   // Load tile data
   asm("rcall load_tiles                ");
@@ -323,6 +333,10 @@ void loop()
     asm("cpi r24, 75");
     asm("brbs 0, right_wall_descriptor_write");
 
+    // 
+    asm("ldi r25, 40");
+    asm("mov r14, r25");
+
   // Start loop
   asm("start_of_frame:                  ");
 
@@ -355,7 +369,6 @@ void loop()
   // Sync pulse
   asm("ldi r25, 0b00001000             ");
   asm("out 0x05, r25                   ");
-  asm("ldi r16, 2                      ");
   asm("rjmp sync_pulse_line");
   asm("sync_pulse_line_ret:");
   asm("rjmp sync_pulse_compute_line");
@@ -960,6 +973,142 @@ void loop()
   asm("lsr r25"); // Divide 16      1
   asm("rcall write_descriptor"); // 24
 
+  // Fix descriptors overwritten by paddle 1 (60)
+
+  asm("mov XL, r14"); // 1
+  //asm("ldi XL, 40");
+  asm("ldi XH, 0"); // 1
+
+  asm("nop");
+  
+  asm("lsl XL"); // 1    Mul 2
+  asm("rol XH"); // 1
+  //asm("lsl XL"); // 1    Mul 4
+  //asm("rol XH"); // 1
+  //asm("lsl XL"); // 1    Mul 8
+  //asm("rol XH"); // 1
+
+  asm("ldi r24, lo8(0x110)"); // 1
+  asm("ldi r23, hi8(0x110)"); // 1
+  asm("add XL, r24");         // 1
+  asm("adc XH, r23");         // 1
+
+  asm("ldi r24, 21");          // 1 (13)
+  asm("st X, r24"); // 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24"); // 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+
+  // Get paddle 1 position (11)
+  asm("lds XL, 0x79"); // 2
+  asm("andi XL, 0b11111100"); // 1
+  asm("cpi XL, 56"); // 1
+  asm("brbs 0, min_paddle"); // 1 / 2
+  asm("cpi XL, 236");
+  asm("brbc 0, max_paddle");
+
+  // Null
+  asm("nop \n nop"); // 2
+  asm("rjmp paddle_1_set"); // 2
+
+  // Max paddle
+  asm("max_paddle:");
+  asm("ldi XL, 236"); // 1
+  asm("rjmp paddle_1_set"); // 2
+
+  // Low end
+  asm("min_paddle:");
+  asm("ldi XL, 56"); // 1
+  asm("rjmp paddle_1_set"); // 2
+
+  asm("paddle_1_set:");
+ 
+  // Draw paddle 1 (74)
+  //asm("ldi XL, 40");
+  asm("ldi XH, 0");
+  asm("mov r14, XL"); // Save position
+
+  asm("lsl XL"); // 1    Mul 2
+  asm("rol XH"); // 1
+  //asm("lsl XL"); // 1    Mul 4
+  //asm("rol XH"); // 1
+  //asm("lsl XL"); // 1    Mul 8
+  //asm("rol XH"); // 1
+
+  asm("ldi r24, lo8(0x110)"); // 1
+  asm("ldi r23, hi8(0x110)"); // 1
+  asm("add XL, r24");         // 1
+  asm("adc XH, r23");         // 1
+
+  asm("ldi r24, 22");          // 1 (15)
+  
+  asm("st X, r24"); // 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24"); // 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+
+  
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+
+  
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 2
+  asm("st X, r24");// 2
+  
+
+  
   // Write ball tile data (40)
   asm("ldi r24, 0"); // 1
   asm("sts 0x560, r24"); // 2
@@ -1013,14 +1162,20 @@ void loop()
   asm("mov r15, r25"); // 1
   asm("ldi r25, 29");
   asm("st X, r25");
+
+  // Start conversion for joystick 1 (will be complete in 1664 cycles?) (6)
+  asm("ldi r25, 0b01100000"); // Select port 0, Set reference voltage to use vcc (5v), Reduce resolution to 8-bit for easy reading from ADCH
+  asm("sts 0x7c, r25"); // Write to ADMUX
+
+  asm("ldi r25, 0b11000111"); // Start conversion, enable adc and set rescaler to x128
+  asm("sts 0x7a, r25"); // Write to ADCSRA
   
-  // Front porch and visible area (329)
-  asm("ldi r25, 107                         "); // 1
-  asm("sync_pulse_compute_line_front_porch:         "); // 3 / 1
+  // Front porch and visible area (417 - 104 = 313)
+  asm("ldi r25, 55                         "); // 1
+  asm("sync_pulse_compute_line_front_porch:         "); // 4 / 1
   asm("dec r25                            ");   // 1
   asm("brne sync_pulse_compute_line_front_porch   ");   // 2 / 1
   asm("ldi r25, 0b00000000                  "); // 1
-  asm("nop");
 
   // Sync pulse (61)
   asm("out 0x05, r25                          "); // 1
