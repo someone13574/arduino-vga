@@ -193,7 +193,13 @@ void loop()
   asm("ldi ZL, 0"); // Ball x-sub-pixel
   asm("ldi ZH, 50"); // Ball x-pixel
 
-  asm("ldi 19, 0b00010001"); // xxxxyyyy ball velocity (1 = pos + 1/16)
+  asm("ldi r25, 0b00000001");
+  asm("mov r13, r25"); // Set ball x-vel
+
+  asm("ldi r25, 0b00000001");
+  asm("mov r12, r25"); // Set ball y-vel
+
+  asm("ldi 19, 0b00010001");
 
   asm("ldi r25, 20");
   asm("mov r15, r25");
@@ -1138,6 +1144,9 @@ void loop()
 
   asm("ldi r24, 0b00000111"); // 1
   asm("st X, r24"); // 2
+
+  // Update ball position
+  asm("add r18, r12");
 
   // Write ball descriptor (18)
   asm("ldi r23, lo8(0x110)"); // 1
