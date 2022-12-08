@@ -91,7 +91,6 @@
 // BBAA AAAA AABB BBBB = 7
 // BBBB BBBB ABBB BBBB = 15
 // BBBB BBBB ABBB BBBB = 15
-// BBBB BBBB ABBB BBBB = 15
 
 // Number 5
 // BBAA AAAA AABB BBBB = 7
@@ -120,7 +119,6 @@
 // BBBB BBBB ABBB BBBB = 15
 // BBBB BBBA BBBB BBBB = 18
 // BBBB BBBA BBBB BBBB = 18
-// BBBB BBAB BBBB BBBB = 19
 // BBBB BBAB BBBB BBBB = 19
 
 // Number 8
@@ -183,36 +181,33 @@ void loop()
 
   // Init adc
   asm("ldi r25, 0b01100000"); // Select port 0, Set reference voltage to use vcc (5v), Reduce resolution to 8-bit for easy reading from ADCH
-  asm("sts 0x7c, r25");       // Write to ADMUX
+  asm("sts 0x7c, r25"); // Write to ADMUX
 
   asm("ldi r25, 0b11000111"); // Start conversion, enable adc and set rescaler to x128
-  asm("sts 0x7a, r25");       // Write to ADCSRA
+  asm("sts 0x7a, r25"); // Write to ADCSRA
 
   // Set inital ball position and speed
-  asm("ldi r17, 0");  // Ball y-sub-pixel
+  asm("ldi r17, 0"); // Ball y-sub-pixel
   asm("ldi r18, 39"); // Ball y-pixel
 
-  asm("ldi ZL, 0");  // Ball x-sub-pixel
-  asm("ldi ZH, 50"); // Ball x-pixel
+  asm("ldi ZL, 0"); // Ball x-sub-pixel
+  asm("ldi ZH, 30"); // Ball x-pixel
 
-  asm("ldi r25, 0b00000010");
+  asm("ldi r25, 0b00100000");
   asm("mov r13, r25"); // Set ball x-vel
 
-  asm("ldi r25, 0b00000010");
+  asm("ldi r25, 0b01000000");
   asm("mov r12, r25"); // Set ball y-vel
 
   asm("ldi 19, 0b00010001");
 
-  asm("ldi r25, 20");
-  asm("mov r15, r25");
-
-  // Set initial scores
   asm("ldi r25, 0");
-  asm("mov r11, r25"); // P1 score
-  asm("mov r10, r25"); // P2 score
+  asm("mov r15, r25");
 
   // Load tile data
   asm("rcall load_tiles                ");
+
+  // Load descriptors
 
   // Clear descriptors
   asm("ldi r25, 0");
@@ -221,18 +216,56 @@ void loop()
   asm("ldi YL, lo8(640)");
   asm("ldi YH, hi8(640)");
   asm("clear_descriptors_loop:");
-  asm("st X+, r25");
-  asm("sbiw Y, 1");
-  asm("brne clear_descriptors_loop");
-
+    asm("st X+, r25");
+    asm("sbiw Y, 1");
+    asm("brne clear_descriptors_loop");
+  
   // Load scores
   asm("ldi r25, 3");
-  asm("ldi r22, 0");
-  asm("rcall update_score");
+  asm("ldi r24, 4");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 1, left
+  asm("ldi r24, 5");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 2, left
+  asm("ldi r24, 6");
+  asm("ldi r23, 3");
+  asm("rcall write_descriptor"); // Line 3, left
+  asm("ldi r24, 7");
+  asm("rcall write_descriptor"); // Line 4, left
+  asm("ldi r24, 8");
+  asm("rcall write_descriptor"); // Line 5, left
+  asm("ldi r24, 9");
+  asm("rcall write_descriptor"); // Line 6, left
+  asm("ldi r24, 10");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 7, left
+  asm("ldi r24, 11");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 8, left
 
   asm("ldi r25, 4");
-  asm("ldi r22, 0");
-  asm("rcall update_score");
+  asm("ldi r24, 4");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 1, right
+  asm("ldi r24, 5");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 2, right
+  asm("ldi r24, 6");
+  asm("ldi r23, 3");
+  asm("rcall write_descriptor"); // Line 3, right
+  asm("ldi r24, 7");
+  asm("rcall write_descriptor"); // Line 4, right
+  asm("ldi r24, 8");
+  asm("rcall write_descriptor"); // Line 5, right
+  asm("ldi r24, 9");
+  asm("rcall write_descriptor"); // Line 6, right
+  asm("ldi r24, 10");
+  asm("ldi r23, 2");
+  asm("rcall write_descriptor"); // Line 7, right
+  asm("ldi r24, 11");
+  asm("ldi r23, 1");
+  asm("rcall write_descriptor"); // Line 8, right
 
   // Load top wall
   asm("ldi r25, 0");
@@ -282,33 +315,33 @@ void loop()
   asm("ldi r24, 15");
   asm("ldi r23, 25");
   asm("middle_line_descriptor_write:");
-  asm("rcall write_descriptor");
-  asm("inc r24");
-  asm("inc r24");
-  asm("cpi r24, 75");
-  asm("brbs 0, middle_line_descriptor_write");
+    asm("rcall write_descriptor");
+    asm("inc r24");
+    asm("inc r24");
+    asm("cpi r24, 75");
+    asm("brbs 0, middle_line_descriptor_write");
 
   asm("ldi r25, 0");
   asm("ldi r24, 14");
   asm("ldi r23, 21");
   asm("left_wall_descriptor_write:");
-  asm("rcall write_descriptor");
-  asm("inc r24");
-  asm("cpi r24, 75");
-  asm("brbs 0, left_wall_descriptor_write");
+    asm("rcall write_descriptor");
+    asm("inc r24");
+    asm("cpi r24, 75");
+    asm("brbs 0, left_wall_descriptor_write");
 
   asm("ldi r25, 7");
   asm("ldi r24, 14");
   asm("ldi r23, 28");
   asm("right_wall_descriptor_write:");
-  asm("rcall write_descriptor");
-  asm("inc r24");
-  asm("cpi r24, 75");
-  asm("brbs 0, right_wall_descriptor_write");
+    asm("rcall write_descriptor");
+    asm("inc r24");
+    asm("cpi r24, 75");
+    asm("brbs 0, right_wall_descriptor_write");
 
-  //
-  asm("ldi r25, 40");
-  asm("mov r14, r25");
+    // 
+    asm("ldi r25, 40");
+    asm("mov r14, r25");
 
   // Start loop
   asm("start_of_frame:                  ");
@@ -323,9 +356,9 @@ void loop()
   asm("rjmp load_line               "); // 2+501+2+3=508
   asm("load_line_ret:           nop    ");
   asm("rcall visible_line          \n nop "); // 3+4+501=508
-  asm("rcall visible_line           ");       // 3+4+501=508
+  asm("rcall visible_line           "); // 3+4+501=508
   asm("rcall visible_line          \n nop "); // 3+4+501=508
-  asm("rcall visible_line           ");       // 3+4+501=508
+  asm("rcall visible_line           "); // 3+4+501=508
   asm("rcall visible_line          \n nop "); // 3+4+501=508
 
   asm("dec r16                      ");
@@ -935,24 +968,159 @@ void loop()
 
   // Sync pulse line compute
   asm("sync_pulse_compute_line:                       ");
+  asm("ldi r22, 0"); // Zero
 
-  // Fix tile overwritten by ball (31)
-  asm("mov r23, r15");           //           1
-  asm("mov r24, r18");           //            1
-  asm("mov r25, ZH");            //             1
-  asm("lsr r25");                // Divide 2       1
-  asm("lsr r25");                // Divide 4       1
-  asm("lsr r25");                // Divide 8      1
-  asm("lsr r25");                // Divide 16      1
-  asm("rcall write_descriptor"); // 24
+  // Fix descriptor overwritten by ball (22)
+  asm("ldi XL, lo8(0x110)"); // 1
+  asm("ldi XH, hi8(0x110)"); // 1
 
-  // Fix descriptors overwritten by paddle 1 (60)
+  asm("mov r25, r18"); // 1
+  asm("ldi r24, 0"); // 1
+  asm("lsl r25"); // 1
+  asm("rol r24"); // 1
+  asm("lsl r25"); // 1
+  asm("rol r24"); // 1
+  asm("lsl r25"); // 1
+  asm("rol r24"); // 1
+  asm("andi r25, 0b11111000"); // 1
+  asm("add XL, r25"); // 1
+  asm("adc XH, r24"); // 1
+
+  asm("mov r25, ZH"); // 1
+  asm("lsr r25"); // 1
+  asm("lsr r25"); // 1
+  asm("lsr r25"); // 1
+  asm("lsr r25"); // 1
+  asm("andi r25, 0b00001111"); // 1
+  asm("or XL, r25"); // 1
+
+  asm("mov r25, r15"); // 1 here
+  asm("st X, r25"); // 2
+
+  // Fix ball tile (8)
+  asm("mov r25, ZH"); // 1
+  asm("andi r25, 0b00001111"); // 1
+  
+  asm("ldi XL, lo8(0x560)"); // 1
+  asm("ldi XH, hi8(0x560)"); // 1
+  asm("add XL, r25"); // 1
+  asm("adc XH, r22"); // 1
+
+  asm("st X, r22"); // 2
+
+  // Update ball position (12)
+  // X
+  asm("sbrc r13, 0"); // 1 / 2
+  asm("rjmp update_x_neg"); // 2
+
+  asm("add ZL, r13"); // 1
+  asm("adc ZH, r22"); // 1
+  asm("rjmp x_update_complete"); // 2
+
+  asm("update_x_neg:");
+  asm("sub ZL, r13"); // 1
+  asm("sbc ZH, r22"); // 1
+  asm("nop"); // 1
+
+  asm("x_update_complete:");
+
+  // Y
+  asm("sbrc r12, 0"); // 1 / 2
+  asm("rjmp update_y_neg"); // 2
+  
+  asm("add r17, r12"); // 1
+  asm("adc r18, r22"); // 1
+  asm("rjmp y_update_complete"); // 2
+
+  asm("update_y_neg:");
+  asm("sub r17, r12"); // 1
+  asm("sbc r18, r22"); // 1
+  asm("nop"); // 1   (Synchonize paths)
+
+  asm("y_update_complete:");
+
+  // Bounce y (12)
+  asm("cpi r18, 74"); // 1
+  asm("brsh y_bounce_top"); // 1 / 2
+  asm("nop \n nop"); // 2    Path Sync
+  asm("rjmp y_bounce_test_bottom"); // 2
+
+  asm("y_bounce_top:");
+  asm("mov r25, r12"); // 1
+  asm("ori r25, 0b00000001"); // 1
+  asm("mov r12, r25"); // 1
+
+  asm("y_bounce_test_bottom:");
+  asm("cpi r18, 15"); // 1
+  asm("brlo y_bounce_bottom"); // 1 / 2
+  asm("nop \n nop"); // 2    Path Sync
+  asm("rjmp y_bounce_test_complete"); // 2
+
+  asm("y_bounce_bottom:");
+  asm("mov r25, r12"); // 1
+  asm("andi r25, 0b11111110"); // 1
+  asm("mov r12, r25"); // 1
+
+  asm("y_bounce_test_complete:");
+
+  // Test for goals (5)
+  asm("cpi ZH, 118"); // 1
+  asm("brsh p1_scored"); // 1 / 2
+  
+  asm("nop"); // 1
+  asm("rjmp test_p2_scored"); // 2
+
+  asm("p1_scored:");
+  asm("ldi r25, 0"); // 1
+  asm("mov r13, r25"); // 1
+
+  asm("test_p2_scored:");
+  
+  // Write ball tile data (9)
+  asm("mov r25, ZH"); // 1
+  asm("andi r25, 0b00001111"); // 1
+  
+  asm("ldi XL, lo8(0x560)"); // 1
+  asm("ldi XH, hi8(0x560)"); // 1
+  asm("add XL, r25"); // 1
+  asm("adc XH, r22"); // 1
+
+  asm("ldi r25, 0b00000111"); // 1
+  asm("st X, r25"); // 2
+
+  // Write ball descriptor (24)
+  asm("ldi XL, lo8(0x110)"); // 1
+  asm("ldi XH, hi8(0x110)"); // 1
+
+  asm("mov r25, r18"); // 1
+  asm("ldi r24, 0"); // 1
+  asm("lsl r25"); // 1
+  asm("rol r24"); // 1
+  asm("lsl r25"); // 1
+  asm("rol r24"); // 1
+  asm("lsl r25"); // 1
+  asm("rol r24"); // 1
+  asm("andi r25, 0b11111000"); // 1
+  asm("add XL, r25"); // 1
+  asm("adc XH, r24"); // 1
+
+  asm("mov r25, ZH"); // 1
+  asm("lsr r25"); // 1
+  asm("lsr r25"); // 1
+  asm("lsr r25"); // 1
+  asm("lsr r25"); // 1
+  asm("andi r25, 0b00000111"); // 1
+  asm("or XL, r25"); // 1
+
+  asm("ld r15, X");
+  asm("ldi r25, 29"); // 1
+  asm("st X, r25"); // 2
+
+  // Fix descriptors overwritten by paddle 1 (66)
 
   asm("mov XL, r14"); // 1
-  asm("ldi XH, 0");   // 1
-
-  asm("nop");
-
+  asm("ldi XH, 0"); // 1
+  
   asm("lsl XL"); // 1    Mul 2
   asm("rol XH"); // 1
 
@@ -961,64 +1129,65 @@ void loop()
   asm("add XL, r24");         // 1
   asm("adc XH, r23");         // 1
 
-  asm("ldi r24, 21"); // 1 (13)
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
-  asm("adiw X, 8");   // 1
-  asm("st X, r24");   // 2
+  asm("ldi r24, 21");          // 1
+  asm("st X, r24"); // 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24"); // 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
+  asm("adiw X, 8"); // 1
+  asm("st X, r24");// 2
 
   // Get paddle 1 position (11)
-  asm("lds XL, 0x79");        // 2
+  asm("lds XL, 0x79"); // 2
   asm("andi XL, 0b11111100"); // 1
-  asm("cpi XL, 56");          // 1
-  asm("brbs 0, min_paddle");  // 1 / 2
+  asm("cpi XL, 56"); // 1
+  asm("brbs 0, min_paddle"); // 1 / 2
   asm("cpi XL, 236");
   asm("brbc 0, max_paddle");
 
   // Null
-  asm("nop \n nop");        // 2
+  asm("nop \n nop"); // 2
   asm("rjmp paddle_1_set"); // 2
 
   // Max paddle
   asm("max_paddle:");
-  asm("ldi XL, 236");       // 1
+  asm("ldi XL, 236"); // 1
   asm("rjmp paddle_1_set"); // 2
 
   // Low end
   asm("min_paddle:");
-  asm("ldi XL, 56");        // 1
+  asm("nop \n nop");
+  asm("ldi XL, 56"); // 1
   asm("rjmp paddle_1_set"); // 2
 
   asm("paddle_1_set:");
-
-  // Draw paddle 1 (74)
+ 
+  // Draw paddle 1 (73)
   asm("ldi XH, 0");
   asm("mov r14, XL"); // Save position
 
@@ -1030,170 +1199,72 @@ void loop()
   asm("add XL, r24");         // 1
   asm("adc XH, r23");         // 1
 
-  asm("ldi r24, 22"); // 1 (15)
-
+  asm("ldi r24, 22");          // 1 (9)
+  
   asm("st X, r24"); // 2
   asm("adiw X, 8"); // 2
   asm("st X, r24"); // 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
+  asm("st X, r24");// 2
   asm("adiw X, 8"); // 2
-  asm("st X, r24"); // 2
-
-  // Write ball tile data (40)
-  asm("ldi r24, 0");     // 1
-  asm("sts 0x560, r24"); // 2
-  asm("sts 0x561, r24");
-  asm("sts 0x562, r24");
-  asm("sts 0x563, r24");
-  asm("sts 0x564, r24");
-  asm("sts 0x565, r24");
-  asm("sts 0x566, r24");
-  asm("sts 0x567, r24");
-  asm("sts 0x568, r24");
-  asm("sts 0x569, r24");
-  asm("sts 0x56a, r24");
-  asm("sts 0x56b, r24");
-  asm("sts 0x56c, r24");
-  asm("sts 0x56d, r24");
-  asm("sts 0x56e, r24");
-  asm("sts 0x56f, r24");
-
-  asm("ldi XL, lo8(0x560)"); // 1
-  asm("ldi XH, hi8(0x560)"); // 1
-
-  asm("mov r23, ZH");
-  asm("andi r23, 0b00001111");
-  asm("add XL, r23"); // 1
-  asm("adc XH, r24"); // 1
-
-  asm("ldi r24, 0b00000111"); // 1
-  asm("st X, r24");           // 2
-
-  // Update ball position
-  // ZL = ball sub-x
-  // ZH = ball x
-  // r17 = ball sub-y
-  // r18 = ball y
-  // r13 = ball x-vel
-  // r12 = ball y-vel
-  // r25 = 0
-
-  asm("ldi r25, 0");
-
-  asm("sbrs r13, 0");
-  asm("rjmp neg_x_velo");
-
-  // X-Velocity positive
-  asm("add ZL, r13");
-  asm("add ZH, r25");
-
-  asm("cpi ZH, 124"); // C = 1 if X-pos < 124
-  asm("brbs 0, ball_bounce_right_test");
-
-  // P1 scored
-  asm("inc r11");
-  asm("rjmp update_y_pos");
-
-  // Test for bounce on paddle 2
-  asm("ball_bounce_right_test:");
-
-  // X-Velocity negative
-  asm("neg_x_velo:");
-  asm("sub XL, r13");
-  asm("sbc XH, r25");
-
-  asm("cpi ZH, 4"); // C = 1 if X-pos < 4
-  asm("brbc 0, ball_bounce_left_test");
-
-  // P2 scored
-  asm("inc r10");
-  asm("rjmp update_y_pos");
-
-  // Update y pos
-  asm("update_y_pos:");
-
-  // Write ball descriptor (18)
-  asm("ldi r23, lo8(0x110)");             // 1
-  asm("ldi r24, hi8(0x110)");             // 1
-  asm("mov XL, r18");                     // 1
-  asm("ldi XH, 0x00");                    // 1
-  asm("lsl XL                         "); // 1    Multiply by 2
-  asm("rol XH                         "); // 1
-  asm("lsl XL                         "); // 1    Multiply by 2 (now 4x)
-  asm("rol XH                         "); // 1
-  asm("lsl XL                         "); // 1    Multiply by 2 (now 8x)
-  asm("rol XH                         "); // 1
-
-  asm("add XL, r23"); // 1
-  asm("adc XH, r24"); // 1
-
-  asm("add XL, r25");   // 1
-  asm("ldi r23, 0x00"); // 1
-  asm("adc XH, r23");   // 1
-
-  asm("ld r25, X");    // 2
-  asm("mov r15, r25"); // 1
-  asm("ldi r25, 29");
-  asm("st X, r25");
+  asm("st X, r24");// 2
 
   // Start conversion for joystick 1 (will be complete in 1664 cycles?) (6)
   asm("ldi r25, 0b01100000"); // Select port 0, Set reference voltage to use vcc (5v), Reduce resolution to 8-bit for easy reading from ADCH
-  asm("sts 0x7c, r25");       // Write to ADMUX
+  asm("sts 0x7c, r25"); // Write to ADMUX
 
   asm("ldi r25, 0b11000111"); // Start conversion, enable adc and set rescaler to x128
-  asm("sts 0x7a, r25");       // Write to ADCSRA
+  asm("sts 0x7a, r25"); // Write to ADCSRA
 
-  // Front porch and visible area (417 - 104 = 313)
-  asm("ldi r25, 55                         ");          // 1
-  asm("sync_pulse_compute_line_front_porch:         "); // 4 / 1
-  asm("dec r25                            ");           // 1
+
+  // 241 to here
+  // Front porch and visible area (417 - 241 = 177)
+  asm("ldi r25, 53                         "); // 1
+  asm("sync_pulse_compute_line_front_porch:         "); // 3 / 1
+  asm("dec r25                            ");   // 1
   asm("brne sync_pulse_compute_line_front_porch   ");   // 2 / 1
-  asm("ldi r25, 0b00000000                  ");         // 1
+  asm("ldi r25, 0b00000000                  "); // 1
+  asm("nop \n nop"); // 1
 
   // Sync pulse (61)
-  asm("out 0x05, r25                          ");         // 1
-  asm("ldi r25, 19                            ");         // 1
+  asm("out 0x05, r25                          "); // 1
+  asm("ldi r25, 19                            "); // 1
   asm("sync_pulse_compute_line_sync_pulse:            "); // 3 / 1
-  asm("dec r25                             ");            // 1
+  asm("dec r25                             ");    // 1
   asm("brne sync_pulse_compute_line_sync_pulse     ");    // 2 / 1
-  asm("ldi r25, 0b00001000                    ");         // 1
+  asm("ldi r25, 0b00001000                    "); // 1
 
   // Back porch (30.5064548163 cycles) (23)
-  asm("out 0x05, r25                          ");         // 1
-  asm("ldi r25, 7                             ");         // 1
+  asm("out 0x05, r25                          "); // 1
+  asm("ldi r25, 7                             "); // 1
   asm("sync_pulse_line_compute_back_porch:            "); // 4 / 1
-  asm("dec r25                              ");           // 1
+  asm("dec r25                              ");   // 1
   asm("brne sync_pulse_line_compute_back_porch      ");   // 2 / 1
-  asm("nop \n nop                            ");          // 2
+  asm("nop \n nop                            ");  // 2
 
   asm("rjmp sync_pulse_compute_line_ret               "); // 2
 
@@ -1859,308 +1930,25 @@ void loop()
   asm("st X+, r23                     "); // 15
   asm("st X+, r23                     "); // 16
 
+  // Tile 29 - BBBB BBBB BBBB BBBB - Ball
+  asm("ldi r25, 29                    ");
+  asm("rcall init_tile_load           ");
+  asm("st X+, r23                     "); // 1
+  asm("st X+, r23                     "); // 2
+  asm("st X+, r23                     "); // 3
+  asm("st X+, r23                     "); // 4
+  asm("st X+, r23                     "); // 5
+  asm("st X+, r23                     "); // 6
+  asm("st X+, r23                     "); // 7
+  asm("st X+, r23                     "); // 8
+  asm("st X+, r23                     "); // 9
+  asm("st X+, r23                     "); // 10
+  asm("st X+, r23                     "); // 11
+  asm("st X+, r23                     "); // 12
+  asm("st X+, r23                     "); // 13
+  asm("st X+, r23                     "); // 14
+  asm("st X+, r23                     "); // 15
+  asm("st X+, r23                     "); // 16
+
   asm("ret");
-
-  // Update score (r22 = score, r25 = x) (227)
-  asm("update_score:"); // 3
-
-  asm("cpi r22, 0");           // 1
-  asm("brbs 1, set_score_0");  // 1 / 2
-  asm("cpi r22, 1");           // 1
-  asm("brbs 1, set_score_1");  // 1 / 2
-  asm("cpi r22, 2");           // 1
-  asm("brbs 1, set_score_2");  // 1 / 2
-  asm("cpi r22, 3");           // 1
-  asm("brbs 1, set_score_3");  // 1 / 2
-  asm("cpi r22, 4");           // 1
-  asm("brbs 1, set_score_4");  // 1 / 2
-  asm("cpi r22, 5");           // 1
-  asm("brbs 1, set_score_5");  // 1 / 2
-  asm("cpi r22, 6");           // 1
-  asm("brbs 1, set_score_6");  // 1 / 2
-  asm("cpi r22, 7");           // 1
-  asm("brbs 1, set_score_7");  // 1 / 2
-  asm("cpi r22, 8");           // 1
-  asm("brbs 1, set_score_8");  // 1 / 2
-  asm("cpi r22, 9");           // 1
-  asm("brbs 1, set_score_10"); // 1 / 2
-
-  asm("set_score_0:");                                                // Set to 0 (whole func + rcall = 227)
-  asm("ldi r24, 4");                                                  // 1
-  asm("ldi r23, 1");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 5");                                                  // 1
-  asm("ldi r23, 2");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 6");                                                  // 1
-  asm("ldi r23, 3");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 7");                                                  // 1
-  asm("ldi r23, 3");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 8");                                                  // 1
-  asm("ldi r23, 3");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 9");                                                  // 1
-  asm("ldi r23, 3");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 10");                                                 // 1
-  asm("ldi r23, 2");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("ldi r24, 11");                                                 // 1
-  asm("ldi r23, 1");                                                  // 1
-  asm("rcall write_descriptor");                                      // 24
-  asm("nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop"); // 9     Sync
-  asm("ret");                                                         // 4
-
-  asm("set_score_1:");                                         // Set to 1 (whole func + rcall = 227)
-  asm("ldi r24, 4");                                           // 1
-  asm("ldi r23, 4");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 5");                                           // 1
-  asm("ldi r23, 5");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 6");                                           // 1
-  asm("ldi r23, 6");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 7");                                           // 1
-  asm("ldi r23, 6");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 8");                                           // 1
-  asm("ldi r23, 6");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 9");                                           // 1
-  asm("ldi r23, 6");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 10");                                          // 1
-  asm("ldi r23, 6");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("ldi r24, 11");                                          // 1
-  asm("ldi r23, 7");                                           // 1
-  asm("rcall write_descriptor");                               // 24
-  asm("nop \n nop \n nop \n nop \n nop \n nop \n nop \n nop"); // 8     Sync
-  asm("ret");                                                  // 4
-
-  asm("set_score_2:");                                  // Set to 2 (whole func + rcall = 227)
-  asm("ldi r24, 4");                                    // 1
-  asm("ldi r23, 8");                                    // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 5");                                    // 1
-  asm("ldi r23, 3");                                    // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 6");                                    // 1
-  asm("ldi r23, 9");                                    // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 7");                                    // 1
-  asm("ldi r23, 10");                                   // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 8");                                    // 1
-  asm("ldi r23, 6");                                    // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 9");                                    // 1
-  asm("ldi r23, 11");                                   // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 10");                                   // 1
-  asm("ldi r23, 3");                                    // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("ldi r24, 11");                                   // 1
-  asm("ldi r23, 7");                                    // 1
-  asm("rcall write_descriptor");                        // 24
-  asm("nop \n nop \n nop \n nop \n nop \n nop \n nop"); // 7     Sync
-  asm("ret");                                           // 4
-
-  asm("set_score_3:");                           // Set to 3 (whole func + rcall = 226)
-  asm("ldi r24, 4");                             // 1
-  asm("ldi r23, 8");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 5");                             // 1
-  asm("ldi r23, 3");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 6");                             // 1
-  asm("ldi r23, 3");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 7");                             // 1
-  asm("ldi r23, 10");                            // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 8");                             // 1
-  asm("ldi r23, 9");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 9");                             // 1
-  asm("ldi r23, 3");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 10");                            // 1
-  asm("ldi r23, 3");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("ldi r24, 11");                            // 1
-  asm("ldi r23, 8");                             // 1
-  asm("rcall write_descriptor");                 // 24
-  asm("nop \n nop \n nop \n nop \n nop \n nop"); // 6     Sync
-  asm("ret");                                    // 4
-
-  asm("set_score_4:");                    // Set to 4 (whole func + rcall = 227)
-  asm("ldi r24, 4");                      // 1
-  asm("ldi r23, 12");                     // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 5");                      // 1
-  asm("ldi r23, 13");                     // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 6");                      // 1
-  asm("ldi r23, 14");                     // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 7");                      // 1
-  asm("ldi r23, 2");                      // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 8");                      // 1
-  asm("ldi r23, 7");                      // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 9");                      // 1
-  asm("ldi r23, 15");                     // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 10");                     // 1
-  asm("ldi r23, 15");                     // 1
-  asm("rcall write_descriptor");          // 24
-  asm("ldi r24, 11");                     // 1
-  asm("ldi r23, 15");                     // 1
-  asm("rcall write_descriptor");          // 24
-  asm("nop \n nop \n nop \n nop \n nop"); // 5     Sync
-  asm("ret");                             // 4
-
-  asm("set_score_5:");             // Set to 5 (whole func + rcall = 227)
-  asm("ldi r24, 4");               // 1
-  asm("ldi r23, 7");               // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 5");               // 1
-  asm("ldi r23, 16");              // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 6");               // 1
-  asm("ldi r23, 16");              // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 7");               // 1
-  asm("ldi r23, 7");               // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 8");               // 1
-  asm("ldi r23, 9");               // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 9");               // 1
-  asm("ldi r23, 3");               // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 10");              // 1
-  asm("ldi r23, 3");               // 1
-  asm("rcall write_descriptor");   // 24
-  asm("ldi r24, 11");              // 1
-  asm("ldi r23, 8");               // 1
-  asm("rcall write_descriptor");   // 24
-  asm("nop \n nop \n nop \n nop"); // 4     Sync
-  asm("ret");                      // 4
-
-  asm("set_score_6:");           // Set to 6 (whole func + rcall = 227)
-  asm("ldi r24, 4");             // 1
-  asm("ldi r23, 8");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 5");             // 1
-  asm("ldi r23, 2");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 6");             // 1
-  asm("ldi r23, 16");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 7");             // 1
-  asm("ldi r23, 17");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 8");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 9");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 10");            // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 11");            // 1
-  asm("ldi r23, 8");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("nop \n nop \n nop");      // 3     Sync
-  asm("ret");                    // 4
-
-  asm("set_score_7:");           // Set to 7 (whole func + rcall = 227)
-  asm("ldi r24, 4");             // 1
-  asm("ldi r23, 7");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 5");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 6");             // 1
-  asm("ldi r23, 15");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 7");             // 1
-  asm("ldi r23, 15");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 8");             // 1
-  asm("ldi r23, 18");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 9");             // 1
-  asm("ldi r23, 18");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 10");            // 1
-  asm("ldi r23, 19");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 11");            // 1
-  asm("ldi r23, 19");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("nop \n nop");             // 2     Sync
-  asm("ret");                    // 4
-
-  asm("set_score_8:");           // Set to 8 (whole func + rcall = 227)
-  asm("ldi r24, 4");             // 1
-  asm("ldi r23, 8");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 5");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 6");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 7");             // 1
-  asm("ldi r23, 8");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 8");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 9");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 10");            // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 11");            // 1
-  asm("ldi r23, 8");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("nop");                    // 1     Sync
-  asm("ret");                    // 4
-
-  asm("set_score_9:");           // Set to 9 (whole func + rcall = 227)
-  asm("ldi r24, 4");             // 1
-  asm("ldi r23, 8");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 5");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 6");             // 1
-  asm("ldi r23, 3");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 7");             // 1
-  asm("ldi r23, 20");            // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 8");             // 1
-  asm("ldi r23, 9");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 9");             // 1
-  asm("ldi r23, 9");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 10");            // 1
-  asm("ldi r23, 9");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ldi r24, 11");            // 1
-  asm("ldi r23, 9");             // 1
-  asm("rcall write_descriptor"); // 24
-  asm("ret");                    // 4
 }
